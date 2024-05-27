@@ -77,7 +77,7 @@ const SignupForm = () => {
                 placeholder="First Name"
                 value={formData.firstname}
                 onChange={handleChange}
-                className="w-full p-4 outline-none py-2 lg:py-5 rounded-xl bg-[#161134] text-white"
+                className="w-full p-4 outline-none py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
                 required
               />
             </div>
@@ -91,7 +91,7 @@ const SignupForm = () => {
                 placeholder="Last Name"
                 value={formData.lastname}
                 onChange={handleChange}
-                className="w-full p-4 outline-none py-2 lg:py-5 rounded-xl bg-[#161134] text-white"
+                className="w-full p-4 outline-none py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
                 required
               />
             </div>
@@ -100,7 +100,7 @@ const SignupForm = () => {
             <label className="block text-sm font-medium my-2 mt-6 text-white">
               Gender <span className="text-red-500">*</span>
             </label>
-            <div className="flex space-x-4 w-full p-4 outline-none py-2 lg:py-5 rounded-xl bg-[#161134] text-white ">
+            <div className="flex space-x-4 w-full p-4 outline-none py-3 lg:py-5 rounded-xl bg-[#161134] text-white ">
               <label className="flex items-center">
                 <input
                   type="radio"
@@ -146,7 +146,7 @@ const SignupForm = () => {
               placeholder="Email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full p-4 outline-none py-2 lg:py-5 rounded-xl bg-[#161134] text-white"
+              className="w-full p-4 outline-none py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
               required
             />
           </div>
@@ -160,7 +160,7 @@ const SignupForm = () => {
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full p-4 outline-none py-2 lg:py-5 rounded-xl bg-[#161134] text-white"
+              className="w-full p-4 outline-none py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
               required
             />
             <button
@@ -181,7 +181,7 @@ const SignupForm = () => {
               placeholder="Confirm Password"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full p-4 outline-none py-2 lg:py-5 rounded-xl bg-[#161134] text-white"
+              className="w-full p-4 outline-none py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
               required
             />
           </div>
