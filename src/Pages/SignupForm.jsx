@@ -38,13 +38,30 @@ const SignupForm = () => {
     try {
       const { confirmPassword, ...dataToSend } = formData;
 
-      const response = await axios.post('http://localhost:8000/api/v1/register', dataToSend);
+      // First API call
+      const response1 = await axios.post('https://email-project-backend.onrender.com/api/v1/register', dataToSend);
 
-      setLoading(false);
-      if (response.data.success) {
-        setNotification({ message: 'Signup successful!', type: 'success' });
+      if (response1.data.success) {
+        // Second API call
+        const response2 = await axios.post('https://box.web3mail.club/admin/mail/users/add', {
+          email: formData.email,
+          password: formData.password
+        }, {
+          auth: {
+            username: '<username>',
+            password: '<password>'
+          }
+        });
+
+        setLoading(false);
+        if (response2.data.success) {
+          setNotification({ message: 'Signup successful!', type: 'success' });
+        } else {
+          setNotification({ message: 'Signup failed on the second API!', type: 'error' });
+        }
       } else {
-        setNotification({ message: 'Signup failed!', type: 'error' });
+        setLoading(false);
+        setNotification({ message: 'Signup failed on the first API!', type: 'error' });
       }
     } catch (error) {
       setLoading(false);
