@@ -9,10 +9,10 @@ import bg2 from '../assets/leftdown.svg';
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
-    firstname: '',
-    lastname: '',
+    firstName: '',
+    lastName: '',
     gender: '',
-    email: '',
+    emailUser: '',
     password: '',
     confirmPassword: '',
   });
@@ -20,10 +20,15 @@ const SignupForm = () => {
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
 
+  const adminEmail = import.meta.env.REACT_APP_ADMIN_EMAIL;
+  const adminPassword = import.meta.env.REACT_APP_ADMIN_PASSWORD;  
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,22 +41,44 @@ const SignupForm = () => {
     setLoading(true);
 
     try {
-      const { confirmPassword, ...dataToSend } = formData;
+      const email = `${formData.emailUser}@web3mail.club`;
+      const dataToSend = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        gender: formData.gender, 
+        email: email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+      };
+
+      console.log('Sending data to first API:', dataToSend);
 
       // First API call
-      const response1 = await axios.post('https://email-project-backend.onrender.com/api/v1/register', dataToSend);
+      const response1 = await axios.post('http://16.16.74.176:8000/api/v1/register/', dataToSend);
+
+      console.log('Response from first API:', response1.data);
 
       if (response1.data.success) {
+        // Construct the payload for the second API call
+        const payload2 = {
+          email: email,
+          password: formData.password,
+        };
+
+        console.log('Sending data to second API:', payload2);
+
         // Second API call
-        const response2 = await axios.post('https://box.web3mail.club/admin/mail/users/add', {
-          email: formData.email,
-          password: formData.password
-        }, {
+        const response2 = await axios.post('https://box.web3mail.club/admin/mail/users/add', payload2, {
           auth: {
-            username: '<username>',
-            password: '<password>'
-          }
+            username: adminEmail,
+            password: adminPassword
+          },
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         });
+
+        console.log('Response from second API:', response2.data);
 
         setLoading(false);
         if (response2.data.success) {
@@ -65,6 +92,7 @@ const SignupForm = () => {
       }
     } catch (error) {
       setLoading(false);
+      console.error('Signup error:', error);
       setNotification({ message: 'Signup failed!', type: 'error' });
     }
   };
@@ -90,9 +118,9 @@ const SignupForm = () => {
               </label>
               <input
                 type="text"
-                name="firstname"
+                name="firstName"
                 placeholder="First Name"
-                value={formData.firstname}
+                value={formData.firstName}
                 onChange={handleChange}
                 className="w-full p-4 outline-none py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
                 required
@@ -104,9 +132,9 @@ const SignupForm = () => {
               </label>
               <input
                 type="text"
-                name="lastname"
+                name="lastName"
                 placeholder="Last Name"
-                value={formData.lastname}
+                value={formData.lastName}
                 onChange={handleChange}
                 className="w-full p-4 outline-none py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
                 required
@@ -122,7 +150,7 @@ const SignupForm = () => {
                 <input
                   type="radio"
                   name="gender"
-                  value="male"
+                  value="Male" // Changed to match the expected enum values
                   onChange={handleChange}
                   className="mr-2"
                   required
@@ -133,7 +161,7 @@ const SignupForm = () => {
                 <input
                   type="radio"
                   name="gender"
-                  value="female"
+                  value="Female" // Changed to match the expected enum values
                   onChange={handleChange}
                   className="mr-2"
                   required
@@ -144,7 +172,7 @@ const SignupForm = () => {
                 <input
                   type="radio"
                   name="gender"
-                  value="other"
+                  value="Other" // Changed to match the expected enum values
                   onChange={handleChange}
                   className="mr-2"
                   required
@@ -157,15 +185,19 @@ const SignupForm = () => {
             <label className="block text-sm font-medium my-2 mt-6 text-white">
               Email <span className="text-red-500">*</span>
             </label>
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full p-4 outline-none py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
-              required
-            />
+            <div className="flex">
+              <input
+                type="text"
+                name="emailUser"
+                placeholder="Email"
+                value={formData.emailUser}
+                onChange={handleChange}
+                className="w-full p-4 outline-none py-3 lg:py-5 rounded-l-xl bg-[#161134] text-white"
+                required
+                aria-autocomplete="list"
+              />
+              <span className="p-4 py-3 lg:py-5 rounded-r-xl bg-[#161134] text-[#979797]">@web3mail.club</span>
+            </div>
           </div>
           <div className="relative">
             <label className="block text-sm font-medium my-2 mt-6 text-white">
@@ -201,17 +233,19 @@ const SignupForm = () => {
               className="w-full p-4 outline-none py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
               required
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-3 top-8 p-2 text-white focus:outline-none"
+            >
+              <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+            </button>
           </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="terms"
-              name="terms"
-              required
-              className="w-4 h-4"
-            />
-            <label htmlFor="terms" className="text-sm text-[#808080]">
-              I agree to the <span className="text-[#3C77FB] cursor-pointer">Terms of Service</span> and <span className="text-[#3C77FB] cursor-pointer">Privacy Policy</span>.
+          <div className="flex items-center space-x-2 mt-8 mb-6">
+            <input type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded" required />
+            <label className="text-sm font-medium text-gray-200">
+              I agree to the <span className="underline cursor-pointer">Terms and Conditions</span> and
+              <span className="underline ml-1 cursor-pointer">Privacy Policy</span>.
             </label>
           </div>
           <motion.button
