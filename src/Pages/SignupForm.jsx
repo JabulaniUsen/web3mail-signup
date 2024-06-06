@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -6,12 +6,11 @@ import { motion } from 'framer-motion';
 import Notification from '../Components/Notification';
 import bg1 from '../assets/topright.svg';
 import bg2 from '../assets/leftdown.svg';
+import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark';
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    gender: '',
+    username: '',
     emailUser: '',
     password: '',
     confirmPassword: '',
@@ -19,16 +18,58 @@ const SignupForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [usernameAvailability, setUsernameAvailability] = useState(null);
+  const [usernameSuggestions, setUsernameSuggestions] = useState([]);
+  const suggestionsRef = useRef(null);
+
+  const takenUsernames = ['user1', 'user2', 'user3', 'Rohan', 'Aniket', 'Louis', 'Kartiket'];
 
   const adminEmail = import.meta.env.REACT_APP_ADMIN_EMAIL;
-  const adminPassword = import.meta.env.REACT_APP_ADMIN_PASSWORD;  
+  const adminPassword = import.meta.env.REACT_APP_ADMIN_PASSWORD;
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
+        setUsernameSuggestions([]);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    if (name === 'username') {
+      checkUsernameAvailability(value);
+    }
   };
 
+  const checkUsernameAvailability = (username) => {
+    const isTaken = takenUsernames.includes(username);
+    setUsernameAvailability(isTaken ? 'Taken' : 'Available');
+    if (isTaken) {
+      suggestUsernames(username);
+    } else {
+      setUsernameSuggestions([]);
+    }
+  };
+
+  const suggestUsernames = (baseUsername) => {
+    const suggestions = [];
+    while (suggestions.length < 3) {
+      const randomNumber = Math.floor(Math.random() * 1000);
+      const suggestion = `${baseUsername}${randomNumber}`;
+      if (!takenUsernames.includes(suggestion)) {
+        suggestions.push(suggestion);
+      }
+    }
+    setUsernameSuggestions(suggestions);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,9 +84,7 @@ const SignupForm = () => {
     try {
       const email = `${formData.emailUser}@web3mail.club`;
       const dataToSend = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        gender: formData.gender, 
+        username: formData.username,
         email: email,
         password: formData.password,
         confirmPassword: formData.confirmPassword,
@@ -59,7 +98,6 @@ const SignupForm = () => {
       console.log('Response from first API:', response1.data);
 
       if (response1.data.success) {
-        // Construct the payload for the second API call
         const payload2 = {
           email: email,
           password: formData.password,
@@ -75,7 +113,7 @@ const SignupForm = () => {
           },
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
-          }
+          }
         });
 
         console.log('Response from second API:', response2.data);
@@ -111,92 +149,21 @@ const SignupForm = () => {
           <p className="text-sm text-white font-thin">Glad to have you on board! Create your email account with Web3mail now.</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium my-2 mt-6 text-white">
-                First Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="firstName"
-                placeholder="First Name"
-                value={formData.firstName}
-                onChange={handleChange}
-                className="w-full p-4 outline-none py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium my-2 mt-6 text-white">
-                Last Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="lastName"
-                placeholder="Last Name"
-                value={formData.lastName}
-                onChange={handleChange}
-                className="w-full p-4 outline-none py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
-                required
-              />
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium my-2 mt-6 text-white">
-              Gender <span className="text-red-500">*</span>
-            </label>
-            <div className="flex space-x-4 w-full p-4 outline-none py-3 lg:py-5 rounded-xl bg-[#161134] text-white ">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="Male" // Changed to match the expected enum values
-                  onChange={handleChange}
-                  className="mr-2"
-                  required
-                />
-                Male
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="Female" // Changed to match the expected enum values
-                  onChange={handleChange}
-                  className="mr-2"
-                  required
-                />
-                Female
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="Other" // Changed to match the expected enum values
-                  onChange={handleChange}
-                  className="mr-2"
-                  required
-                />
-                Other
-              </label>
-            </div>
-          </div>
           <div>
             <label className="block text-sm font-medium my-2 mt-6 text-white">
               Email <span className="text-red-500">*</span>
             </label>
-            <div className="flex">
+            <div className="relative">
               <input
                 type="text"
                 name="emailUser"
                 placeholder="Email"
                 value={formData.emailUser}
                 onChange={handleChange}
-                className="w-full p-4 outline-none py-3 lg:py-5 rounded-l-xl bg-[#161134] text-white"
+                className="w-full p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
                 required
                 aria-autocomplete="list"
               />
-              <span className="p-4 py-3 lg:py-5 rounded-r-xl bg-[#161134] text-[#979797]">@web3mail.club</span>
             </div>
           </div>
           <div className="relative">
@@ -209,7 +176,7 @@ const SignupForm = () => {
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full p-4 outline-none py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
+              className="w-full p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
               required
             />
             <button
@@ -230,7 +197,7 @@ const SignupForm = () => {
               placeholder="Confirm Password"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full p-4 outline-none py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
+              className="w-full p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
               required
             />
             <button
@@ -240,6 +207,46 @@ const SignupForm = () => {
             >
               <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
             </button>
+          </div>
+          <div>
+            <label className="block text-sm font-medium my-2 mt-6 text-white">
+              Username <span className="text-red-500">*</span>
+            </label>
+            <div className="relative flex items-center">
+              <input
+                type="text"
+                name="username"
+                placeholder="Username"
+                value={formData.username}
+                // onChange={handleChange}
+                onInput={handleChange}
+                className="w-full p-4 outline-[#3c77fb] py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
+                required
+              />
+              {usernameAvailability && (
+                <span className={`absolute inset-y-0 right-3 top-3 p-2 text-white ${usernameAvailability === 'Taken' ? 'text-red-500' : 'text-[#3EE92F]'}`}>
+                  {usernameAvailability}
+                </span>
+              )}
+            </div>
+            {usernameSuggestions.length > 0 && (
+              <div ref={suggestionsRef} className="mt-2 text-[#808080] bg-[#161134] p-3 rounded-lg">
+                <ul className='flex flex-col gap-4'>
+                  {usernameSuggestions.map((suggestion, index) => (
+                    <li
+                      key={index}
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setFormData({ ...formData, username: suggestion });
+                        setUsernameSuggestions([]);
+                      }}
+                    >
+                      {suggestion}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
           <div className="flex items-center space-x-2 mt-8 mb-6">
             <input type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded" required />
@@ -258,7 +265,7 @@ const SignupForm = () => {
             {loading ? (
               <div className="loader"></div>
             ) : (
-              'Sign up'
+              'Next'
             )}
           </motion.button>
         </form>
