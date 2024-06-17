@@ -1,36 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEyeSlash, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import Notification from '../Components/Notification';
 import bg1 from '../assets/topright.svg';
 import bg2 from '../assets/leftdown.svg';
-import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark';
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
-    username: '',
-    emailUser: '',
+    firstName: '',
+    lastName: '',
+    gender: '',
+    email: '',
     password: '',
     confirmPassword: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
-  const [usernameAvailability, setUsernameAvailability] = useState(null);
-  const [usernameSuggestions, setUsernameSuggestions] = useState([]);
+  const [emailAvailability, setEmailAvailability] = useState(null);
   const suggestionsRef = useRef(null);
-
-  const takenUsernames = ['user1', 'user2', 'user3', 'Rohan', 'Aniket', 'Louis', 'Kartiket'];
-
-  const adminEmail = import.meta.env.REACT_APP_ADMIN_EMAIL;
-  const adminPassword = import.meta.env.REACT_APP_ADMIN_PASSWORD;
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
-        setUsernameSuggestions([]);
+        setEmailAvailability(null);
       }
     };
 
@@ -44,31 +41,19 @@ const SignupForm = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
-    if (name === 'username') {
-      checkUsernameAvailability(value);
+    if (name === 'email') {
+      checkEmailAvailability(value);
     }
   };
 
-  const checkUsernameAvailability = (username) => {
-    const isTaken = takenUsernames.includes(username);
-    setUsernameAvailability(isTaken ? 'Taken' : 'Available');
-    if (isTaken) {
-      suggestUsernames(username);
-    } else {
-      setUsernameSuggestions([]);
+  const checkEmailAvailability = async (email) => {
+    try {
+      const response = await axios.post('http://16.16.74.176:8000/api/v1/isEmailTaken', { email });
+      setEmailAvailability(response.data.isTaken ? 'Taken' : 'Available');
+    } catch (error) {
+      console.error('Email check error:', error);
+      setEmailAvailability(null);
     }
-  };
-
-  const suggestUsernames = (baseUsername) => {
-    const suggestions = [];
-    while (suggestions.length < 3) {
-      const randomNumber = Math.floor(Math.random() * 1000);
-      const suggestion = `${baseUsername}${randomNumber}`;
-      if (!takenUsernames.includes(suggestion)) {
-        suggestions.push(suggestion);
-      }
-    }
-    setUsernameSuggestions(suggestions);
   };
 
   const handleSubmit = async (e) => {
@@ -82,24 +67,24 @@ const SignupForm = () => {
     setLoading(true);
 
     try {
-      const email = `${formData.emailUser}@web3mail.club`;
       const dataToSend = {
-        username: formData.username,
-        email: email,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        gender: formData.gender,
+        email: `${formData.email}@web3mail.club`,
         password: formData.password,
-        confirmPassword: formData.confirmPassword,
       };
 
       console.log('Sending data to first API:', dataToSend);
 
       // First API call
-      const response1 = await axios.post('http://16.16.74.176:8000/api/v1/register/', dataToSend);
+      const response1 = await axios.post('http://16.16.74.176:8000/api/v1/register', dataToSend);
 
       console.log('Response from first API:', response1.data);
 
       if (response1.data.success) {
         const payload2 = {
-          email: email,
+          username: dataToSend.email,
           password: formData.password,
         };
 
@@ -107,12 +92,8 @@ const SignupForm = () => {
 
         // Second API call
         const response2 = await axios.post('https://box.web3mail.club/admin/mail/users/add', payload2, {
-          auth: {
-            username: adminEmail,
-            password: adminPassword
-          },
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/json'
           }
         });
 
@@ -120,18 +101,19 @@ const SignupForm = () => {
 
         setLoading(false);
         if (response2.data.success) {
-          setNotification({ message: 'Signup successful!', type: 'success' });
+          setNotification({ message: response2.data.message, type: 'success' });
+          navigate('/create-mail', { state: { username: dataToSend.email } }); // Navigate to CreateMail with username
         } else {
-          setNotification({ message: 'Signup failed on the second API!', type: 'error' });
+          setNotification({ message: response2.data.message, type: 'error' });
         }
       } else {
         setLoading(false);
-        setNotification({ message: 'Signup failed on the first API!', type: 'error' });
+        setNotification({ message: response1.data.message, type: 'error' });
       }
     } catch (error) {
       setLoading(false);
       console.error('Signup error:', error);
-      setNotification({ message: 'Signup failed!', type: 'error' });
+      setNotification({ message: error.response?.data?.message || 'Signup failed!', type: 'error' });
     }
   };
 
@@ -141,6 +123,9 @@ const SignupForm = () => {
 
   return (
     <div className="flex items-center justify-center bg-[#050122] lg:py-40 py-20 px-2 relative inter">
+      <button className='absolute top-10 right-10 z-20 p-2 px-8 bg-blue-500 float-end text-white rounded-full hover:bg-blue-800 transition-all text-lg'>
+        Connect Wallet
+      </button>
       <img src={bg1} alt="" className="lg:block hidden absolute top-0 right-0" />
       <img src={bg2} alt="" className="lg:block absolute hidden bottom-0 left-0" />
       <div className="bg-[#0c072c] lg:p-8 py-8 px-5 rounded-2xl w-full max-w-[35rem] border-[0.1px] border-[#453995]">
@@ -151,132 +136,173 @@ const SignupForm = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium my-2 mt-6 text-white">
-              Email <span className="text-red-500">*</span>
+              First Name <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <input
                 type="text"
-                name="emailUser"
-                placeholder="Email"
-                value={formData.emailUser}
+                name="firstName"
+                placeholder="First Name"
+                value={formData.firstName}
                 onChange={handleChange}
                 className="w-full p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
                 required
-                aria-autocomplete="list"
               />
             </div>
-          </div>
-          <div className="relative">
-            <label className="block text-sm font-medium my-2 mt-6 text-white">
-              Password <span className="text-red-500">*</span>
-            </label>
-            <input
-              type={showPassword ? 'text' : 'password'}
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-3 top-8 p-2 text-white focus:outline-none"
-            >
-              <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-            </button>
-          </div>
-          <div className="relative">
-            <label className="block text-sm font-medium my-2 mt-6 text-white">
-              Confirm Password <span className="text-red-500">*</span>
-            </label>
-            <input
-              type={showPassword ? 'text' : 'password'}
-              name="confirmPassword"
-              placeholder="Confirm Password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className="w-full p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-3 top-8 p-2 text-white focus:outline-none"
-            >
-              <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-            </button>
           </div>
           <div>
             <label className="block text-sm font-medium my-2 mt-6 text-white">
-              Username <span className="text-red-500">*</span>
+              Last Name <span className="text-red-500">*</span>
             </label>
-            <div className="relative flex items-center">
+            <div className="relative">
               <input
                 type="text"
-                name="username"
-                placeholder="Username"
-                value={formData.username}
-                // onChange={handleChange}
-                onInput={handleChange}
-                className="w-full p-4 outline-[#3c77fb] py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
+                name="lastName"
+                placeholder="Last Name"
+                value={formData.lastName}
+                onChange={handleChange}
+                className="w-full p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
                 required
               />
-              {usernameAvailability && (
-                <span className={`absolute inset-y-0 right-3 top-3 p-2 text-white ${usernameAvailability === 'Taken' ? 'text-red-500' : 'text-[#3EE92F]'}`}>
-                  {usernameAvailability}
-                </span>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium my-2 mt-6 text-white">
+              Gender <span className="text-red-500">*</span>
+            </label>
+            <div className="flex space-x-4">
+              <label className="text-white">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="Male"
+                  checked={formData.gender === 'Male'}
+                  onChange={handleChange}
+                  className="mr-2"
+                />
+                Male
+              </label>
+              <label className="text-white">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="Female"
+                  checked={formData.gender === 'Female'}
+                  onChange={handleChange}
+                  className="mr-2"
+                />
+                Female
+              </label>
+              <label className="text-white">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="Other"
+                  checked={formData.gender === 'Other'}
+                  onChange={handleChange}
+                  className="mr-2"
+                />
+                Other
+              </label>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium my-2 mt-6 text-white">
+              Email <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <div className={`flex justify-center items-center p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134] text-white ${emailAvailability === 'Taken' ? 'border-2 border-red-500' : emailAvailability === 'Available' ? 'border-2 border-green-500' : ''
+                    }`}>
+                <input
+                  type="text"
+                  name="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className='w-full outline-none bg-transparent'
+                  required
+                />
+                <p className='text-gray-200'>@web3mail.com</p>
+              </div>
+              {emailAvailability && (
+                <div ref={suggestionsRef} className="absolute left-0 mt-2 w-full p-2 rounded-lg bg-[#050122] border-[0.1px] border-[#453995] z-10">
+                  <div className={`p-2 text-sm rounded-lg ${emailAvailability === 'Taken' ? 'text-red-500' : 'text-green-500'}`}>
+                    {emailAvailability === 'Taken' ? (
+                      <>
+                        <FontAwesomeIcon icon={faTimesCircle} className="mr-2" />
+                        Email is already taken. Please choose another one.
+                      </>
+                    ) : (
+                      <>
+                        <FontAwesomeIcon icon={faCheckCircle} className="mr-2" />
+                        Email is available.
+                      </>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
-            {usernameSuggestions.length > 0 && (
-              <div ref={suggestionsRef} className="mt-2 text-[#808080] bg-[#161134] p-3 rounded-lg">
-                <ul className='flex flex-col gap-4'>
-                  {usernameSuggestions.map((suggestion, index) => (
-                    <li
-                      key={index}
-                      className="cursor-pointer"
-                      onClick={() => {
-                        setFormData({ ...formData, username: suggestion });
-                        setUsernameSuggestions([]);
-                      }}
-                    >
-                      {suggestion}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
-          <div className="flex items-center space-x-2 mt-8 mb-6">
-            <input type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded" required />
-            <label className="text-sm font-medium text-gray-200">
-              I agree to the <span className="underline cursor-pointer">Terms and Conditions</span> and
-              <span className="underline ml-1 cursor-pointer">Privacy Policy</span>.
+          <div>
+            <label className="block text-sm font-medium my-2 mt-6 text-white">
+              Password <span className="text-red-500">*</span>
             </label>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
+                required
+              />
+              <div
+                className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} className="text-gray-500" />
+              </div>
+            </div>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          <div>
+            <label className="block text-sm font-medium my-2 mt-6 text-white">
+              Confirm Password <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className="w-full p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134] text-white"
+                required
+              />
+              <div
+                className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} className="text-gray-500" />
+              </div>
+            </div>
+          </div>
+          <button
             type="submit"
-            className="p-2 px-8 bg-blue-500 float-end text-white rounded-full text-lg"
+            className="w-full py-3 lg:py-5 mt-6 text-lg font-semibold text-white bg-blue-500 rounded-xl hover:bg-blue-800 transition-all"
             disabled={loading}
           >
-            {loading ? (
-              <div className="loader"></div>
-            ) : (
-              'Next'
-            )}
-          </motion.button>
+            {loading ? <div className="loader"></div> : 'Next'}
+          </button>
         </form>
-        {notification && (
-          <Notification
-            message={notification.message}
-            type={notification.type}
-            onClose={handleCloseNotification}
-          />
-        )}
       </div>
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={handleCloseNotification}
+        />
+      )}
     </div>
   );
 };
