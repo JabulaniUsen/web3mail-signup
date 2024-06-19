@@ -78,7 +78,7 @@ const SignupForm = () => {
       console.log('Sending data to first API:', dataToSend);
 
       // First API call
-      const response1 = await axios.post('http://16.16.74.176:8000/api/v1/registerInBox', { email, password });
+      const response1 = await axios.post('http://16.16.74.176:8000/api/v1/registerInBox', dataToSend);
 
       console.log('Response from first API:', response1.data);
 
