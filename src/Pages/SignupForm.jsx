@@ -91,7 +91,7 @@ const SignupForm = () => {
         console.log('Sending data to second API:', payload2);
 
         // Second API call
-        const response2 = await axios.post('https://box.web3mail.club/admin/mail/users/add', payload2, {
+        const response2 = await axios.post('http://16.16.74.176:8000/api/v1/registerInBox', payload2, {
           headers: {
             'Content-Type': 'application/json'
           }
@@ -222,7 +222,7 @@ const SignupForm = () => {
                   className='w-full outline-none bg-transparent'
                   required
                 />
-                <p className='text-gray-200'>@web3mail.com</p>
+                <p className='text-gray-200'>@web3mail.club</p>
               </div>
               {emailAvailability && (
                 <div ref={suggestionsRef} className="absolute left-0 mt-2 w-full p-2 rounded-lg bg-[#050122] border-[0.1px] border-[#453995] z-10">
