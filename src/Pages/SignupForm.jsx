@@ -47,26 +47,26 @@ const SignupForm = () => {
     }
   };
 
-  const checkEmailAvailability = async (email) => {
-    try {
-      const response = await axios.post('http://16.16.74.176:8000/api/v1/isEmailTaken', { email });
-      setEmailAvailability(response.data.isTaken ? 'Taken' : 'Available');
-    } catch (error) {
-      console.error('Email check error:', error);
-      setEmailAvailability(null);
-    }
-  };
+  // const checkEmailAvailability = async (email) => {
+  //   try {
+  //     const response = await axios.post('http://16.16.74.176:8000/api/v1/isEmailTaken', { email });
+  //     setEmailAvailability(response.data.isTaken ? 'Taken' : 'Available');
+  //   } catch (error) {
+  //     console.error('Email check error:', error);
+  //     setEmailAvailability(null);
+  //   }
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (formData.password !== formData.confirmPassword) {
       setNotification({ message: 'Passwords do not match!', type: 'error' });
       return;
     }
-
+  
     setLoading(true);
-
+  
     try {
       const dataToSend = {
         firstName: formData.firstName,
@@ -75,41 +75,20 @@ const SignupForm = () => {
         email: `${formData.email}@web3mail.club`,
         password: formData.password,
       };
-
-      console.log('Sending data to first API:', dataToSend);
-
-      // First API call
-      const response1 = await axios.post('http://16.16.74.176:8000/api/v1/register', dataToSend);
-
-      console.log('Response from first API:', response1.data);
-
-      if (response1.data.success) {
-        const payload2 = {
-          username: dataToSend.email,
-          password: formData.password,
-        };
-
-        console.log('Sending data to second API:', payload2);
-
-        // Second API call
-        // const response2 = await axios.post('https://box.web3mail.club/admin/mail/users/add', payload2, {
-        //   headers: {
-        //     'Content-Type': 'application/json'
-        //   }
-        // });
-        //
-        // console.log('Response from second API:', response2.data);
-        //
-        // setLoading(false);
-        // if (response2.data.success) {
-        //   setNotification({ message: response2.data.message, type: 'success' });
-        //   navigate('/create-mail', { state: { username: dataToSend.email } }); // Navigate to CreateMail with username
-        // } else {
-        //   setNotification({ message: response2.data.message, type: 'error' });
-        // }
+  
+      console.log('Sending data to API:', dataToSend);
+  
+      // API call
+      const response = await axios.post('http://16.16.74.176:8000/api/v1/register', dataToSend);
+  
+      console.log('Response from API:', response.data);
+  
+      setLoading(false);
+      if (response.data.success) {
+        setNotification({ message: response.data.message, type: 'success' });
+        navigate('/create-mail', { state: { username: dataToSend.email } }); // Navigate to CreateMail with username
       } else {
-        setLoading(false);
-        setNotification({ message: response1.data.message, type: 'error' });
+        setNotification({ message: response.data.message, type: 'error' });
       }
     } catch (error) {
       setLoading(false);
@@ -117,6 +96,7 @@ const SignupForm = () => {
       setNotification({ message: error.response?.data?.message || 'Signup failed!', type: 'error' });
     }
   };
+  
 
   const handleCloseNotification = () => {
     setNotification(null);
@@ -229,7 +209,7 @@ const SignupForm = () => {
                       className='w-full outline-none bg-transparent'
                       required
                   />
-                  <p className='text-gray-200'>@web3mail.com</p>
+                  <p className='text-gray-200'>@web3mail.club</p>
                 </div>
                 {emailAvailability && (
                     <div ref={suggestionsRef}
