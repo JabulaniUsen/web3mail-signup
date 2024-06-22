@@ -1,7 +1,6 @@
-import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import SignupForm from './Pages/SignupForm'
-import CreateMail from './Pages/CreateMail'
+import SignupForm from './Pages/SignupForm';
+import CreateMail from './Pages/CreateMail';
 
 function App() {
   return (
