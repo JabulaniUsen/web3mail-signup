@@ -9,33 +9,114 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import axiosInstance from '../config/axios';
 import { ethers } from 'ethers';
 import { web3mailABI } from '../utils/web3mail/contractABI';
-import { parseAbi } from 'viem';
-import { readContract, waitForTransactionReceipt } from 'wagmi/actions';
-import { writeContract, getAccount, connect, getBalance } from '@wagmi/core';
+import { waitForTransactionReceipt } from 'wagmi/actions';
+import { writeContract } from '@wagmi/core';
 import { wagmiConfig } from '../config/wagmi';
+import Button from '../Components/Button';
+import { useAccount } from 'wagmi';
+import baseHelper from '../utils/helper';
+import { useNavigate } from 'react-router-dom';
+import Notification from '../Components/Notification';
 
 const contractAddress = '0x3c4B67EbE31C492Bc4679F8e1a6A4b37B7D55b6B';
 const baseBuyAmountInWei = 1200000000000000;
 
 const CreateMail = () => {
+  const { isConnected } = useAccount();
   const [years, setYears] = useState(1);
-  const [email, setEmail] = useState('jc@web3mail.club'); // TODO: get from local storage
+  const [email, setEmail] = useState('default@web3mail.club');
   const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const location = useLocation();
   const { username } = location.state || {}; // Get the username from state
   const [amountInEth, setAmountInEth] = useState(0.0012);
   const [amountInWei, setAmountInWei] = useState(baseBuyAmountInWei);
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const navigate = useNavigate();
+  const [notification, setNotification] = useState(null);
+  const [registerComplete, setRegisterComplete] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    gender: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
 
-  const handlePaymentSuccess = () => {
+  // close notification
+  const handleCloseNotification = () => {
+    setNotification(null);
+  };
+
+  const handlePaymentSuccess = async () => {
     setShowSuccessModal(true);
 
-    // redirect to register page
-    setTimeout(() => {
-      window.location.href = '/register';
-    }, 2000);
+    // register user
+    let registerFailCount = 0;
+    let registerSuccess = false;
+
+    while (!registerSuccess && registerFailCount < 3) {
+      registerFailCount++;
+      console.log('register fail count', registerFailCount);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log('retrying register');
+      const response = await axiosInstance.post('/register', formData);
+      console.log('register response', response.data);
+
+      if (!response.status === 200) {
+        if (registerFailCount === 3) {
+          setNotification({
+            message:
+              response?.data?.message ||
+              'Error Creating Mail, Please reload the page and try again',
+            type: 'error'
+          });
+        }
+        return;
+      }
+
+      registerSuccess = true;
+      setNotification({
+        message: 'Mail created successfully',
+        type: 'success'
+      });
+
+      setRegisterComplete(true);
+
+      setTimeout(() => {
+        navigate('/login');
+        baseHelper.deleteFromLocalStorage('formData');
+      }, 2000);
+    }
   };
+
+  useEffect(() => {
+    // get form data from local storage
+    const formDataFromLocalStorage = baseHelper.getFromLocalStorage('formData');
+
+    // validate form data
+    const requiredFormDataFields = [
+      'firstName',
+      'lastName',
+      'email',
+      'password',
+      'gender'
+    ];
+    if (
+      !formDataFromLocalStorage ||
+      !requiredFormDataFields.every(
+        (field) => formDataFromLocalStorage?.[field]
+      )
+    ) {
+      navigate('/');
+    }
+
+    // update email with email from local storage
+    if (formDataFromLocalStorage && formDataFromLocalStorage?.email) {
+      setEmail(formDataFromLocalStorage.email);
+      setFormData(formDataFromLocalStorage);
+    }
+  }, []);
 
   const handleBuy = async () => {
     setLoading(true);
@@ -52,14 +133,13 @@ const CreateMail = () => {
         }
       });
 
+      //the below hash is for testing
+      // const hash =
+      //   '0xdae91d723c9583abf4f222d410c7800e492fa2fb95791c0974caca13404d6d96';
+
       if (!hash) {
         throw new Error('Error making payment');
       }
-
-      // console.log('hash', hash);
-      // 0xdae91d723c9583abf4f222d410c7800e492fa2fb95791c0974caca13404d6d96
-      // const hash2 =
-      //   '0xdae91d723c9583abf4f222d410c7800e492fa2fb95791c0974caca13404d6d96';
 
       if (hash) {
         try {
@@ -70,10 +150,9 @@ const CreateMail = () => {
           console.log('confirmationRes', confirmationRes);
 
           if (confirmationRes?.status !== 'success') {
-            setPaymentSuccess(false);
+            throw new Error('Error confirming payment');
           }
 
-          setPaymentSuccess(true);
           handlePaymentSuccess();
         } catch (error) {
           console.log('error', error);
@@ -82,8 +161,11 @@ const CreateMail = () => {
       }
     } catch (error) {
       setLoading(false);
-      setPaymentSuccess(false);
       console.log('error making payment', error);
+      setNotification({
+        message: error?.message || 'Error making payment',
+        type: 'error'
+      });
     }
   };
 
@@ -173,7 +255,7 @@ const CreateMail = () => {
             </p>
           </div>
 
-          <button
+          {/* <button
             className={`text-[#ffff] bg-[#3C77FB] hover:bg-[#2b5ac0] active:bg-[#142c5f] rounded-3xl w-full p-5 text-xl ${
               loading && 'bg-[#5085f9] cursor-not-allowed'
             }`}
@@ -181,7 +263,15 @@ const CreateMail = () => {
             onClick={handleBuy}
           >
             {loading ? <div className="loader"></div> : 'Create Mail'}
-          </button>
+          </button> */}
+
+          <Button
+            walletConnected={isConnected}
+            onClick={handleBuy}
+            disabled={loading}
+          >
+            {loading ? <div className="loader"></div> : 'Create Mail'}
+          </Button>
         </div>
       )}
 
@@ -189,10 +279,34 @@ const CreateMail = () => {
         <div className="p-12 rounded-2xl bg-white lg:w-[500px] w-[350px] flex flex-col justify-center items-center">
           <img src={successImg} alt="" className="lg:w-[330px] w-[200px]" />
           <p className="text-[#3C77FB] lg:text-2xl text-lg font-semibold text-center">
-            Mail Created Successfully and it is Valid for <span>{years}</span>
-            <span>{years < 2 ? 'year' : 'years'}</span>
+            {registerComplete ? (
+              <div>
+                Mail Created Successfully and it is Valid for{' '}
+                <span>{years}</span>
+                <span>{years < 2 ? 'year' : 'years'}</span>
+              </div>
+            ) : (
+              <div>
+                <div>
+                  Payment Successful,
+                  <br />
+                  kindly wait while we create your mail
+                </div>
+                <div className="text-red-700 creating-mail">
+                  Creating Mail...
+                </div>
+              </div>
+            )}
           </p>
         </div>
+      )}
+
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={handleCloseNotification}
+        />
       )}
     </div>
   );

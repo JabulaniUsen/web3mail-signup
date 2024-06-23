@@ -1,7 +1,11 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCheckCircle,
+  faTimesCircle
+} from '@fortawesome/free-solid-svg-icons';
+import PropTypes from 'prop-types';
 
 const Notification = ({ message, type, onClose }) => {
   useEffect(() => {
@@ -29,6 +33,12 @@ const Notification = ({ message, type, onClose }) => {
       )}
     </AnimatePresence>
   );
+};
+
+Notification.propTypes = {
+  message: PropTypes.string.isRequired,
+  type: PropTypes.oneOf(['success', 'error']).isRequired,
+  onClose: PropTypes.func.isRequired
 };
 
 export default Notification;

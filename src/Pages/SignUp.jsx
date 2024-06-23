@@ -7,8 +7,12 @@ import bg1 from '../assets/topright.svg';
 import bg2 from '../assets/leftdown.svg';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import axiosInstance from '../config/axios';
+import { useAccount } from 'wagmi';
+import Button from '../Components/Button';
+import baseHelper from '../utils/helper';
 
-const SignupForm = () => {
+const SignUp = () => {
+  const { isConnected } = useAccount();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -78,25 +82,27 @@ const SignupForm = () => {
         password: formData.password
       };
 
-      console.log('Sending data to API:', dataToSend);
+      // save data to local storage
+      baseHelper.addToLocalStorage('formData', dataToSend);
+      navigate('/create-mail', { state: { email: dataToSend.email } }); // navigate to create mail with email
 
       // API call
-      const response = await axiosInstance.post('/register', dataToSend);
+      // const response = await axiosInstance.post('/register', dataToSend);
 
-      console.log('Response from API:', response.data);
+      // console.log('Response from API:', response.data);
 
-      setLoading(false);
-      if (response.data.success) {
-        setNotification({ message: response.data.message, type: 'success' });
-        navigate('/create-mail', { state: { username: dataToSend.email } }); // Navigate to CreateMail with username
-      } else {
-        setNotification({ message: response.data.message, type: 'error' });
-      }
+      // setLoading(false);
+      // if (response.data.success) {
+      //   setNotification({ message: response.data.message, type: 'success' });
+      //   navigate('/create-mail', { state: { username: dataToSend.email } }); // Navigate to CreateMail with username
+      // } else {
+      //   setNotification({ message: response.data.message, type: 'error' });
+      // }
     } catch (error) {
       setLoading(false);
-      console.error('Signup error:', error);
+      console.error('Sign up error:', error);
       setNotification({
-        message: error.response?.data?.message || 'Signup failed!',
+        message: error.response?.data?.message || 'Sign up failed!',
         type: 'error'
       });
     }
@@ -125,17 +131,17 @@ const SignupForm = () => {
         alt=""
         className="lg:block absolute hidden bottom-0 left-0"
       />
-      <div className="bg-[#0c072c] lg:p-8 py-8 px-5 rounded-2xl w-full max-w-[35rem] border-[0.1px] border-[#453995]">
+      <div className="bg-[#0c072c] lg:p-8 py-8 px-5 rounded-2xl w-full max-w-[35rem] border-[0.1px] border-[#453995] mt-10">
         <div className="mb-14">
-          <h2 className="lg:text-3xl text-2xl font-bold mb-2 text-white">
+          <h2 className="lg:text-3xl text-2xl font-bold mb-2 text-white text-center">
             Sign up for Web3mail
           </h2>
-          <p className="text-sm text-white font-thin">
+          <p className="text-sm text-white font-thin text-center">
             Glad to have you on board! Create your email account with Web3mail
             now.
           </p>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form className="space-y-4">
           <div>
             <label className="block text-sm font-medium my-2 mt-6 text-white">
               First Name <span className="text-red-500">*</span>
@@ -292,13 +298,16 @@ const SignupForm = () => {
               </div>
             </div>
           </div>
-          <button
+          {/* <button
             type="submit"
             className="w-full py-3 lg:py-5 mt-6 text-lg font-semibold text-white bg-blue-500 rounded-xl hover:bg-blue-800 transition-all"
             disabled={loading}
           >
             {loading ? <div className="loader"></div> : 'Next'}
-          </button>
+          </button> */}
+          <Button walletConnected={isConnected} onClick={handleSubmit}>
+            {loading ? <div className="loader"></div> : 'Next'}
+          </Button>
         </form>
       </div>
       {notification && (
@@ -312,4 +321,4 @@ const SignupForm = () => {
   );
 };
 
-export default SignupForm;
+export default SignUp;
