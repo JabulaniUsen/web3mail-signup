@@ -78,7 +78,7 @@ const SignUp = () => {
         firstName: formData.firstName,
         lastName: formData.lastName,
         gender: formData.gender,
-        email: `${formData.email}@web3mail.club`,
+        email: formData.email,
         password: formData.password
       };
 
@@ -305,9 +305,12 @@ const SignUp = () => {
           >
             {loading ? <div className="loader"></div> : 'Next'}
           </button> */}
-          <Button walletConnected={isConnected} onClick={handleSubmit}>
-            {loading ? <div className="loader"></div> : 'Next'}
-          </Button>
+          <div className="flex gap-10 items-center justify-between">
+            <button className='w-full py-3 lg:py-5 mt-6 text-lg font-semibold text-white bg-blue-500 rounded-xl  transition-all hover:bg-blue-900 bg-blue-800'>Extend Subscribtion</button>
+            <Button walletConnected={isConnected} onClick={handleSubmit}>
+              {loading ? <div className="loader"></div> : 'Next'}
+            </Button>
+          </div>
         </form>
       </div>
       {notification && (
