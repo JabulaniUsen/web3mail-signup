@@ -18,7 +18,7 @@ import baseHelper from '../utils/helper';
 import { useNavigate } from 'react-router-dom';
 import Notification from '../Components/Notification';
 
-const contractAddress = '0x3c4B67EbE31C492Bc4679F8e1a6A4b37B7D55b6B';
+const contractAddress = '0x70DE5b654834f10d06d4442E08f76b6f08974443';
 const baseBuyAmountInWei = 1200000000000000;
 
 const CreateMail = () => {
@@ -28,7 +28,7 @@ const CreateMail = () => {
   const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const location = useLocation();
-  const { username } = location.state || {}; // Get the username from state
+  const { username } = location.state || {}; 
   const [amountInEth, setAmountInEth] = useState(0.0012);
   const [amountInWei, setAmountInWei] = useState(baseBuyAmountInWei);
   const navigate = useNavigate();
@@ -54,16 +54,23 @@ const CreateMail = () => {
     // register user
     let registerFailCount = 0;
     let registerSuccess = false;
+    
+    console.log(formData);
 
-    while (!registerSuccess && registerFailCount < 3) {
+    if (!registerSuccess && registerFailCount < 3) {
       registerFailCount++;
       console.log('register fail count', registerFailCount);
       await new Promise((resolve) => setTimeout(resolve, 1000));
       console.log('retrying register');
-      const response = await axiosInstance.post('/register', formData);
+      console.log(formData);
+      const response = await axiosInstance.post('/register', {
+        ...formData,
+        registerSecret: "thisisgonnabetheextralayerofsecurity"
+      });
       console.log('register response', response.data);
 
-      if (!response.status === 200) {
+      if (response.status !== 200) {
+        console.log('Registration failed:', response);
         if (registerFailCount === 3) {
           setNotification({
             message:
@@ -72,7 +79,6 @@ const CreateMail = () => {
             type: 'error'
           });
         }
-        return;
       }
 
       registerSuccess = true;
@@ -102,6 +108,7 @@ const CreateMail = () => {
       'password',
       'gender'
     ];
+     
     if (
       !formDataFromLocalStorage ||
       !requiredFormDataFields.every(
@@ -126,7 +133,7 @@ const CreateMail = () => {
         address: contractAddress,
         abi: web3mailABI,
         functionName: 'subscribe',
-        args: ['jc', 1],
+        args: [email, years],
         value: amountInWei,
         overrides: {
           value: amountInWei
@@ -254,16 +261,6 @@ const CreateMail = () => {
               {amountInEth} ETH
             </p>
           </div>
-
-          {/* <button
-            className={`text-[#ffff] bg-[#3C77FB] hover:bg-[#2b5ac0] active:bg-[#142c5f] rounded-3xl w-full p-5 text-xl ${
-              loading && 'bg-[#5085f9] cursor-not-allowed'
-            }`}
-            disabled={loading}
-            onClick={handleBuy}
-          >
-            {loading ? <div className="loader"></div> : 'Create Mail'}
-          </button> */}
 
           <Button
             walletConnected={isConnected}

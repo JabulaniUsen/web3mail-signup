@@ -17,11 +17,13 @@ const ExtendSub = () => {
 
     const handleIncrement = () => {
         setYears((prevYears) => prevYears + 1);
+        setAmountInEth((prevAmount) => prevAmount + 0.001)
       };
     
       const handleDecrement = () => {
         if (years > 1) {
           setYears((prevYears) => prevYears - 1);
+          setAmountInEth((prevAmount) => prevAmount - 0.001)
         }
       };
 

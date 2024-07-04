@@ -19,7 +19,7 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,7 +53,7 @@ const SignIn = () => {
   };
 
   return (
-    <div className="flex items-center justify-center bg-[#050122] lg:py-40 py-20 px-2 relative inter">
+    <div className="flex items-center justify-center bg-[#050122] h-[100vh] lg:py-40 py-20 px-2 relative inter">
       <div className="absolute top-10 right-10 z-20 float-end transition-all">
         <ConnectButton />
       </div>
