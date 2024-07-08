@@ -71,6 +71,7 @@ const SignUp = () => {
   };
 
 
+
   return (
     <div className="lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter">
       <img
@@ -100,7 +101,7 @@ const SignUp = () => {
       <div className="lg:p-8 py-8 px-5 rounded-2xl w-full max-w-[35rem] bg-[#0c072c] mt-10 m-auto border-[0.1px] border-[#453995]">
         <div className="mb-14">
           <h2 className="lg:text-3xl text-2xl font-bold mb-2 text-white ">
-            Sign Up for Web3mail
+            {formData.username}@web3mail.club
           </h2>
           <p className="text-sm text-white font-thin ">
           Glad to have you on board! Complete this process by inputing  the following details below

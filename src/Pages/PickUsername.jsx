@@ -54,8 +54,8 @@ const PickUsername = () => {
 
   const checkUsernameAvailability = async (username) => {
     try {
-      const response = await axiosInstance.get(`/usernameAvailability/${username}`);
-      setUsernameAvailability(response.data.isTaken ? 'Taken' : 'Available');
+      const response = await axiosInstance.get(`/emailAvailability/${username}`);
+      setUsernameAvailability(response.data.isTaken ? 'invalid' : 'Available');
       if (!response.data.isTaken) {
         setSuggestions(generateSuggestions(username));
       } else {
@@ -78,13 +78,22 @@ const PickUsername = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    // Check if username is available
-    if (usernameAvailability === 'Taken') {
+    
+    // Check for special characters or spaces
+    const specialCharPattern = /[^a-zA-Z0-9]/;
+    if (specialCharPattern.test(username)) {
+      setNotification({
+        message: 'Username should not contain special characters or spaces!',
+        type: 'error'
+      });
+      return;
+    }
+
+    if (usernameAvailability === 'invalid') {
       setNotification({ message: 'Username is already taken!', type: 'error' });
       return;
     }
-  
+
     // Check if username field is empty
     if (username === '') {
       setNotification({
@@ -93,26 +102,26 @@ const PickUsername = () => {
       });
       return;
     }
-  
+
     try {
       const dataToSend = {
         ...formData,
         username,
         registerSecret: "thisisgonnabetheextralayerofsecurity"
       };
-  
+
       baseHelper.addToLocalStorage('formData', dataToSend);
-  
+
       // Show notification
-      setNotification({ message: 'Username available', type: 'success' });
-  
+      // setNotification({ message: 'Username available', type: 'success' });
+
       // Navigate after a delay
       setLoading(true);
       setTimeout(() => {
         setLoading(false);
         navigate('/signup', { state: { formData: dataToSend } });
       }, 1000); // Adjust the delay as needed
-  
+
     } catch (error) {
       setLoading(false);
       console.error('Sign up error:', error);
@@ -122,7 +131,7 @@ const PickUsername = () => {
       });
     }
   };
-  
+
   const handleCloseNotification = () => {
     setNotification(null);
   };
@@ -164,7 +173,7 @@ const PickUsername = () => {
             <div className="relative">
               <div
                 className={`flex justify-center items-center p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134] text-white ${
-                  usernameAvailability === 'Taken'
+                  usernameAvailability === 'invalid'
                     ? 'border-2 border-red-500'
                     : usernameAvailability === 'Available'
                     ? 'border-2 border-green-500'
@@ -187,10 +196,21 @@ const PickUsername = () => {
                   {usernameAvailability === 'Available' ? 'Available' : 'Not Available'}
                 </div>
               )}
-              {suggestions.length > 0 && (
-                <div ref={suggestionsRef} className="mt-2 text-white">
-                  <p className="text-sm">Suggestions:</p>
-                  <ul>
+
+            {usernameAvailability === 'invalid' ? 
+            
+            <div ref={suggestionsRef} className="mt-2 text-white p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134]">
+            <ul className='flex flex-col gap-4'>
+              {suggestions.map((suggestion, index) => (
+                <li key={index} onClick={() => setUsername(suggestion)} className="cursor-pointer hover:text-gray-400">
+                  {suggestion}
+                </li>
+              ))}
+            </ul>
+          </div> : ''}
+              {/* {suggestions.length > 0 && (
+                <div ref={suggestionsRef} className="mt-2 text-white p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134]">
+                  <ul className='flex flex-col gap-4'>
                     {suggestions.map((suggestion, index) => (
                       <li key={index} onClick={() => setUsername(suggestion)} className="cursor-pointer hover:text-gray-400">
                         {suggestion}
@@ -198,7 +218,7 @@ const PickUsername = () => {
                     ))}
                   </ul>
                 </div>
-              )}
+              )} */}
             </div>
           </div>
           <div className="flex gap-10 items-center justify-between">

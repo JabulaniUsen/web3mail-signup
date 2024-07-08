@@ -25,12 +25,12 @@ const baseBuyAmountInWei = 1200000000000000;
 const CreateMail = () => {
   const { isConnected } = useAccount();
   const [years, setYears] = useState(1);
-  const [email, setEmail] = useState('default@web3mail.club');
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const location = useLocation();
   const { username } = location.state || {}; 
-  const [amountInEth, setAmountInEth] = useState(0.0012);
+  const [amountInEth, setAmountInEth] = useState(0.011);
   const [amountInWei, setAmountInWei] = useState(baseBuyAmountInWei);
   const navigate = useNavigate();
   const [notification, setNotification] = useState(null);
@@ -120,8 +120,8 @@ const CreateMail = () => {
     }
 
     // update email with email from local storage
-    if (formDataFromLocalStorage && formDataFromLocalStorage?.email) {
-      setEmail(formDataFromLocalStorage.email);
+    if (formDataFromLocalStorage && formDataFromLocalStorage?.username) {
+      setEmail(formDataFromLocalStorage.username);
       setFormData(formDataFromLocalStorage);
     }
   }, []);
@@ -169,7 +169,9 @@ const CreateMail = () => {
       }
     } catch (error) {
       setLoading(false);
-      console.log('error making payment', error);
+      console.log(error.message);
+      console.log(error);
+      // console.log('error making payment', error);
       setNotification({
         message: error?.message || 'Error making payment',
         type: 'error'
@@ -198,12 +200,12 @@ const CreateMail = () => {
       const res = await axiosInstance.get(
         `/subscriptionAmount/${email}/${years}`
       );
-
+      console.log(res, res.data.amount);
       if (!res || !res?.data?.amount) {
         console.log('error getting amount', res);
         return;
       }
-
+      
       const amountInWeiFromRes = res?.data?.amount;
       const ethValue = ethers.formatEther(amountInWei);
 
@@ -212,7 +214,7 @@ const CreateMail = () => {
         setAmountInWei(parseInt(amountInWeiFromRes));
       }
     } catch (error) {
-      console.log('error', error);
+      // console.log('error', error);
     }
   };
 
