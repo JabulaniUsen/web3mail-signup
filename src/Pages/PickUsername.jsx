@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axiosInstance from '../config/axios';
 import Notification from '../Components/Notification';
-import Button from '../Components/Button';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import baseHelper from '../utils/helper';
 import { useAccount } from 'wagmi';
@@ -79,31 +78,41 @@ const PickUsername = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
+    // Check if username is available
     if (usernameAvailability === 'Taken') {
       setNotification({ message: 'Username is already taken!', type: 'error' });
       return;
     }
-
-    setLoading(true);
-
+  
+    // Check if username field is empty
+    if (username === '') {
+      setNotification({
+        message: 'Please enter a Username',
+        type: 'error'
+      });
+      return;
+    }
+  
     try {
       const dataToSend = {
         ...formData,
         username,
         registerSecret: "thisisgonnabetheextralayerofsecurity"
       };
-
+  
       baseHelper.addToLocalStorage('formData', dataToSend);
-      if (username === '') {
-        setLoading(false)
-        setNotification({
-            message: 'Please enter a Username',
-            type: 'error'
-          });
-      } else {
-        navigate('/signup', { state: { username: dataToSend.username } });
-      }
-
+  
+      // Show notification
+      setNotification({ message: 'Username available', type: 'success' });
+  
+      // Navigate after a delay
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+        navigate('/signup', { state: { formData: dataToSend } });
+      }, 1000); // Adjust the delay as needed
+  
     } catch (error) {
       setLoading(false);
       console.error('Sign up error:', error);
@@ -113,13 +122,13 @@ const PickUsername = () => {
       });
     }
   };
-
+  
   const handleCloseNotification = () => {
     setNotification(null);
   };
 
   return (
-    <div className="lg:px-20 px-5 bg-[#050122] lg:pb-40 py-20 px-2 relative inter">
+    <div className="lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter h-[100vh]">
       <img
         src={bg1}
         alt=""
@@ -196,6 +205,7 @@ const PickUsername = () => {
             <button
               className='text-lg font-semibold text-white bg-blue-500 rounded-xl transition-all px-8 py-3 w-full'
               onClick={handleSubmit}
+              disabled={loading}
             >
               {loading ? <div className="loader"></div> : 'Next'}
             </button>
@@ -214,4 +224,3 @@ const PickUsername = () => {
 };
 
 export default PickUsername;
-                             

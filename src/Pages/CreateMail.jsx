@@ -16,6 +16,7 @@ import Button from '../Components/Button';
 import { useAccount } from 'wagmi';
 import baseHelper from '../utils/helper';
 import { useNavigate } from 'react-router-dom';
+import logo from '../assets/logo.svg';
 import Notification from '../Components/Notification';
 
 const contractAddress = '0x70DE5b654834f10d06d4442E08f76b6f08974443';
@@ -115,7 +116,7 @@ const CreateMail = () => {
         (field) => formDataFromLocalStorage?.[field]
       )
     ) {
-      navigate('/');
+      // navigate('/');
     }
 
     // update email with email from local storage
@@ -216,16 +217,21 @@ const CreateMail = () => {
   };
 
   return (
-    <div className="flex items-center justify-center bg-[#050122] lg:py-40 py-20 px-2 relative inter h-[120vh]">
-      <div className="absolute top-10 right-10 z-20 float-end transition-all">
-        <ConnectButton />
+    <div className="bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter h-[120vh]">
+      <div className="flex justify-between px-20 lg:mb-20 mb-10">
+        <div className="logo">
+          <img src={logo} alt="" />
+        </div>
+        <div className=" z-20 transition-all">
+          <ConnectButton />
+        </div>
       </div>
 
       <img src={bg1} alt="" className="absolute top-0 right-0" />
       <img src={bg2} alt="" className="absolute bottom-0 left-0" />
 
       {!showSuccessModal && (
-        <div className="bg-[#0c072c] lg:p-8 relative py-8 px-5 rounded-2xl w-full max-w-[35rem] border-[0.1px] border-[#453995]">
+        <div className="bg-[#0c072c] m-auto lg:p-8 py-8 px-5 relative rounded-2xl w-full max-w-[35rem] border-[0.1px] border-[#453995]">
           <div className="mb-14">
             <img
               src={bg1}
@@ -273,7 +279,7 @@ const CreateMail = () => {
       )}
 
       {showSuccessModal && (
-        <div className="p-12 rounded-2xl bg-white lg:w-[500px] w-[350px] flex flex-col justify-center items-center">
+        <div className="p-12 m-auto rounded-2xl bg-white lg:w-[500px] w-[350px] flex flex-col justify-center items-center">
           <img src={successImg} alt="" className="lg:w-[330px] w-[200px]" />
           <p className="text-[#3C77FB] lg:text-2xl text-lg font-semibold text-center">
             {registerComplete ? (
