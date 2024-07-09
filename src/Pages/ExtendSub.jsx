@@ -4,6 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGasPump, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import bg2 from '../assets/leftdown.svg';
 import bg1 from '../assets/topright.svg';
+import logo from '../assets/logo.svg';
+import grid from '../assets/grid.svg';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const ExtendSub = () => {
@@ -42,15 +44,24 @@ const ExtendSub = () => {
   };
 
   return (
-    <div className='flex items-center justify-center bg-[#050122] lg:py-40 py-20 px-2 relative inter h-[120vh]'>
-      <div className="absolute top-10 right-10 z-20 float-end transition-all">
-        <ConnectButton />
+    <div className='lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter h-[100vh]'>
+      <div className="flex justify-between">
+        <div className="logo">
+          <img src={logo} alt="" />
+        </div>
+        <div className="z-20 transition-all flex items-center gap-5">
+          <div className="flex item-center gap-1 cursor-pointer">
+            <img src={grid} alt="" />
+            <p className="text-[#3C77FB] text-lg font-semibold lg:block hidden">My Names</p>
+          </div>
+          <ConnectButton />
+        </div>
       </div>
 
       <img src={bg1} alt="" className="absolute top-0 right-0" />
       <img src={bg2} alt="" className="absolute bottom-0 left-0" />
 
-      <div className="bg-[#0c072c] relative py-8 rounded-lg w-full max-w-[35rem] border-[0.1px] border-[#453995]">
+      <div className="bg-[#0c072c] m-auto mt-40 relative py-8 rounded-lg w-full max-w-[35rem] border-[0.1px] border-[#453995]">
         <div className="px-5 border-b border-[#453995]">
           <div className="mb-14">
             <img src={bg1} alt="" className="lg:block hidden absolute top-0 right-0 w-[200px]" />

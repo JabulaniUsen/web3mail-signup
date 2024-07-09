@@ -8,6 +8,7 @@ import { useAccount } from 'wagmi';
 import logo from '../assets/logo.svg';
 import bg1 from '../assets/topright.svg';
 import bg2 from '../assets/leftdown.svg';
+import grid from '../assets/grid.svg';
 
 const PickUsername = () => {
   const [username, setUsername] = useState('');
@@ -152,7 +153,11 @@ const PickUsername = () => {
         <div className="logo">
           <img src={logo} alt="" />
         </div>
-        <div className=" z-20 transition-all">
+        <div className="z-20 transition-all flex items-center gap-5">
+          <div className="flex item-center gap-1 cursor-pointer">
+            <img src={grid} alt="" />
+            <p className="text-[#3C77FB] text-lg font-semibold lg:block hidden">My Names</p>
+          </div>
           <ConnectButton />
         </div>
       </div>
