@@ -9,7 +9,8 @@ import { useAccount } from 'wagmi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import Button from '../Components/Button';
-import grid from '../assets/grid.svg'
+import grid from '../assets/grid.svg';
+import baseHelper from '../utils/helper';
 
 const SignUp = () => {
   const { isConnected } = useAccount();
@@ -57,6 +58,9 @@ const SignUp = () => {
     // Exclude confirmPassword before navigating
     const { confirmPassword, ...dataToSend } = formData;
 
+    console.log("sign up form data", formData);
+    baseHelper.addToLocalStorage('formData', formData);
+
     console.log('Navigating to /create-mail with formData:', dataToSend);
     navigate('/create-mail', { state: { formData: dataToSend } });
   };
@@ -101,10 +105,10 @@ const SignUp = () => {
       <div className="lg:p-8 py-8 px-5 rounded-2xl w-full max-w-[35rem] bg-[#0c072c] mt-10 m-auto border-[0.1px] border-[#453995]">
         <div className="mb-14">
           <h2 className="lg:text-3xl text-2xl font-bold mb-2 text-white ">
-            {formData.username}@web3mail.club
+            {formData.email}@web3mail.club
           </h2>
           <p className="text-sm text-white font-thin ">
-          Glad to have you on board! Complete this process by inputing  the following details below
+            Glad to have you on board! Complete this process by inputing  the following details below
           </p>
         </div>
         <form className="space-y-4" onSubmit={handleSubmit}>
@@ -141,18 +145,18 @@ const SignUp = () => {
               Gender <span className="text-red-500">*</span>
             </label>
             <div className="w-full p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134] text-white">
-            <select
-              name="gender"
-              value={formData.gender}
-              onChange={handleChange}
-              className="outline-none bg-transparent w-full"
-              required
-            >
-              <option className='bg-black' value="">Select Gender</option>
-              <option className='bg-black' value="male">Male</option>
-              <option className='bg-black' value="female">Female</option>
-              <option className='bg-black' value="other">Other</option>
-            </select>
+              <select
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                className="outline-none bg-transparent w-full"
+                required
+              >
+                <option className='bg-black' value="">Select Gender</option>
+                <option className='bg-black' value="Male">Male</option>
+                <option className='bg-black' value="Female">Female</option>
+                <option className='bg-black' value="Other">Other</option>
+              </select>
 
             </div>
           </div>
@@ -190,9 +194,8 @@ const SignUp = () => {
                 placeholder="Confirm Password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className={`w-full p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134] text-white outline-none ${
-                  pwError ? 'border-2 border-red-500' : ''
-                }`}
+                className={`w-full p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134] text-white outline-none ${pwError ? 'border-2 border-red-500' : ''
+                  }`}
                 required
               />
               <span

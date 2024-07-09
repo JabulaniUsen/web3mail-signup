@@ -55,9 +55,26 @@ const PickUsername = () => {
 
   const checkUsernameAvailability = async (username) => {
     try {
+      if (!username) {
+        return;
+      }
+      // Check for special characters or spaces
+      const specialCharPattern = /[^a-zA-Z0-9]/;
+      if (specialCharPattern.test(username)) {
+        setUsernameAvailability('Invalid Username');
+        return;
+      }
+      if (username.length < 3) {
+        setUsernameAvailability('Username must be greater than 3 characters');
+        return;
+      }
       const response = await axiosInstance.get(`/emailAvailability/${username}`);
-      setUsernameAvailability(response.data.isTaken ? 'invalid' : 'Available');
-      if (!response.data.isTaken) {
+      const { success, available } = response.data;
+      if (!success) {
+        throw new Error("Failed to check email availability");
+      }
+      setUsernameAvailability(available ? 'Available' : 'Not Avalable');
+      if (!available) {
         setSuggestions(generateSuggestions(username));
       } else {
         setSuggestions([]);
@@ -79,7 +96,7 @@ const PickUsername = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Check for special characters or spaces
     const specialCharPattern = /[^a-zA-Z0-9]/;
     if (specialCharPattern.test(username)) {
@@ -90,7 +107,7 @@ const PickUsername = () => {
       return;
     }
 
-    if (usernameAvailability === 'invalid') {
+    if (usernameAvailability !== 'Available') {
       setNotification({ message: 'Username is already taken!', type: 'error' });
       return;
     }
@@ -104,10 +121,12 @@ const PickUsername = () => {
       return;
     }
 
+    const email = username;
+
     try {
       const dataToSend = {
         ...formData,
-        username,
+        email,
         registerSecret: "thisisgonnabetheextralayerofsecurity"
       };
 
@@ -177,13 +196,12 @@ const PickUsername = () => {
             </label>
             <div className="relative">
               <div
-                className={`flex justify-center items-center p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134] text-white ${
-                  usernameAvailability === 'invalid'
-                    ? 'border-2 border-red-500'
-                    : usernameAvailability === 'Available'
+                className={`flex justify-center items-center p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134] text-white ${usernameAvailability !== 'Available'
+                  ? 'border-2 border-red-500'
+                  : usernameAvailability === 'Available'
                     ? 'border-2 border-green-500'
                     : ''
-                }`}
+                  }`}
               >
                 <input
                   type="text"
@@ -198,21 +216,22 @@ const PickUsername = () => {
               </div>
               {usernameAvailability && (
                 <div className={`text-end ${usernameAvailability === 'Available' ? 'text-green-500' : 'text-red-500'}`}>
-                  {usernameAvailability === 'Available' ? 'Available' : 'Not Available'}
+                  {usernameAvailability}
+                  {/* {usernameAvailability === 'Available' ? 'Available' : 'Not Available'} */}
                 </div>
               )}
 
-            {usernameAvailability === 'invalid' ? 
-            
-            <div ref={suggestionsRef} className="mt-2 text-white p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134]">
-            <ul className='flex flex-col gap-4'>
-              {suggestions.map((suggestion, index) => (
-                <li key={index} onClick={() => setUsername(suggestion)} className="cursor-pointer hover:text-gray-400">
-                  {suggestion}
-                </li>
-              ))}
-            </ul>
-          </div> : ''}
+              {usernameAvailability === 'Not Available' ?
+
+                <div ref={suggestionsRef} className="mt-2 text-white p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134]">
+                  <ul className='flex flex-col gap-4'>
+                    {suggestions.map((suggestion, index) => (
+                      <li key={index} onClick={() => setUsername(suggestion)} className="cursor-pointer hover:text-gray-400">
+                        {suggestion}
+                      </li>
+                    ))}
+                  </ul>
+                </div> : ''}
               {/* {suggestions.length > 0 && (
                 <div ref={suggestionsRef} className="mt-2 text-white p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134]">
                   <ul className='flex flex-col gap-4'>
@@ -230,7 +249,7 @@ const PickUsername = () => {
             <button
               className='text-lg font-semibold text-white bg-blue-500 rounded-xl transition-all px-8 py-3 w-full'
               onClick={handleSubmit}
-              disabled={loading}
+              disabled={loading || usernameAvailability != 'Available'}
             >
               {loading ? <div className="loader"></div> : 'Next'}
             </button>
