@@ -15,7 +15,7 @@ const NamesList = () => {
   const [selectedName, setSelectedName] = useState(null);
   const [expiryFilter, setExpiryFilter] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-
+  
   const nameList = [
     {
       avater: ava,
@@ -136,18 +136,54 @@ const NamesList = () => {
 
 const NameDetailsModal = ({ name, onClose }) => {
   const navigate = useNavigate();
+  const formattedAddress = `${name.address.slice(0, 5)}...${name.address.slice(-5)}`;
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(address)
+      .then(() => {
+        alert('Address copied to clipboard!');
+      })
+      .catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+  };
+
 
   const handleExtendSubscription = () => {
     navigate('/extend-subscription', { state: { username: name.name } });
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-5 rounded-lg shadow-lg max-w-sm w-full transform transition-transform duration-300">
-        <h2 className="text-xl font-bold mb-4">{name.name}</h2>
-        <p><strong>Address:</strong> {name.address}</p>
-        <p><strong>Created On:</strong> {name.createdOn}</p>
-        <p><strong>Expiry Date:</strong> {name.expiry}</p>
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70">
+      <div className="lg:p-8 py-8 px-5 rounded-2xl w-full max-w-[36rem] bg-[#0c072c]  m-auto border-[0.1px] border-[#453995] transform transition-transform duration-300">
+      <div
+          className="flex justify-between items-center py-4 border-b border-[#15131f]"
+      >
+        <>
+          <div className="flex items-start gap-2">
+            <img src={name.avater} alt="" />
+            <div className="">
+              <p className="text-white">{name.name}</p>
+              <small className="text-[#808080]">Expires in {name.expiresIn} year</small>
+            </div>
+          </div>
+        </>
+        <>
+          <p className="text-[#3C77FB] bg-[#b2c8fa] rounded-full px-3 py-1 font-semibold">Owner</p>
+        </>
+      </div>
+      <p 
+        className='text-[#808080] px-3 py-1 rounded-lg bg-[#151034] w-[200px]' 
+        onClick={copyToClipboard}
+        style={{ cursor: 'pointer' }}
+        >
+        {formattedAddress}
+      </p>
+        
+        <div className="">
+            <p className='text-white'>Created On:{name.createdOn}</p>
+            <p className='text-white'>Expiry Date:{name.expiry}</p>
+        </div>
         <button
           className="mt-5 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-200"
           onClick={onClose}
