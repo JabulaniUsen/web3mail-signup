@@ -12,7 +12,7 @@ const ExtendSub = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { username } = location.state || {}; 
+  const { username, year } = location.state || {};
   const [amountInEth, setAmountInEth] = useState(0.0012);
 
   const handleIncrement = () => {
@@ -97,7 +97,7 @@ const ExtendSub = () => {
           </div>
           <div className="bg-[#161134] rounded-lg flex items-center justify-between px-7 relative py-2">
             <p className='text-white'>
-              <span>{years}</span> Year{years > 1 ? 's' : ''} extension
+              <span>{year}</span> Year{year > 1 ? 's' : ''} extension
             </p>
             <div className="amount flex items-center justify-center my-2">
               <p className="text-white ">
