@@ -20,7 +20,7 @@ import logo from '../assets/logo.svg';
 import Notification from '../Components/Notification';
 
 const contractAddress = '0x70DE5b654834f10d06d4442E08f76b6f08974443';
-const baseBuyAmountInWei = 1200000000000000;
+const baseBuyAmountInWei = 1100000000000000;
 
 const CreateMail = () => {
   const { isConnected } = useAccount();
@@ -29,8 +29,8 @@ const CreateMail = () => {
   const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const location = useLocation();
-  const { username } = location.state || {}; 
-  const [amountInEth, setAmountInEth] = useState(0.011);
+  const { username } = location.state || {};
+  const [amountInEth, setAmountInEth] = useState(0.0011);
   const [amountInWei, setAmountInWei] = useState(baseBuyAmountInWei);
   const navigate = useNavigate();
   const [notification, setNotification] = useState(null);
@@ -55,7 +55,7 @@ const CreateMail = () => {
     // register user
     let registerFailCount = 0;
     let registerSuccess = false;
-    
+
     console.log(formData);
 
     if (!registerSuccess && registerFailCount < 3) {
@@ -91,6 +91,7 @@ const CreateMail = () => {
       setRegisterComplete(true);
 
       setTimeout(() => {
+        // https://box.web3mail.club/mail/
         navigate('/login');
         baseHelper.deleteFromLocalStorage('formData');
       }, 2000);
@@ -100,7 +101,7 @@ const CreateMail = () => {
   useEffect(() => {
     // get form data from local storage
     const formDataFromLocalStorage = baseHelper.getFromLocalStorage('formData');
-
+    console.log("form data local", formDataFromLocalStorage);
     // validate form data
     const requiredFormDataFields = [
       'firstName',
@@ -109,7 +110,7 @@ const CreateMail = () => {
       'password',
       'gender'
     ];
-     
+
     if (
       !formDataFromLocalStorage ||
       !requiredFormDataFields.every(
@@ -120,8 +121,8 @@ const CreateMail = () => {
     }
 
     // update email with email from local storage
-    if (formDataFromLocalStorage && formDataFromLocalStorage?.username) {
-      setEmail(formDataFromLocalStorage.username);
+    if (formDataFromLocalStorage && formDataFromLocalStorage?.email) {
+      setEmail(formDataFromLocalStorage.email);
       setFormData(formDataFromLocalStorage);
     }
   }, []);
@@ -196,18 +197,19 @@ const CreateMail = () => {
 
   const getAmountByEmailAndYear = async () => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log("Email and year:", email, years);
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
       const res = await axiosInstance.get(
         `/subscriptionAmount/${email}/${years}`
       );
-      console.log(res, res.data.amount);
+      console.log(res.data.amount);
       if (!res || !res?.data?.amount) {
         console.log('error getting amount', res);
         return;
       }
-      
+
       const amountInWeiFromRes = res?.data?.amount;
-      const ethValue = ethers.formatEther(amountInWei);
+      const ethValue = ethers.formatEther(amountInWeiFromRes);
 
       setAmountInEth(ethValue);
       if (amountInWeiFromRes > baseBuyAmountInWei) {
