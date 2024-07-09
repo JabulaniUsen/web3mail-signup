@@ -132,9 +132,6 @@ const PickUsername = () => {
 
       baseHelper.addToLocalStorage('formData', dataToSend);
 
-      // Show notification
-      // setNotification({ message: 'Username available', type: 'success' });
-
       // Navigate after a delay
       setLoading(true);
       setTimeout(() => {
@@ -157,7 +154,7 @@ const PickUsername = () => {
   };
 
   return (
-    <div className="lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter h-[100vh]">
+    <div className="lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter ">
       <img
         src={bg1}
         alt=""
@@ -232,7 +229,7 @@ const PickUsername = () => {
                     ))}
                   </ul>
                 </div> : ''}
-              {/* {suggestions.length > 0 && (
+              {suggestions.length > 0 && (
                 <div ref={suggestionsRef} className="mt-2 text-white p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134]">
                   <ul className='flex flex-col gap-4'>
                     {suggestions.map((suggestion, index) => (
@@ -242,12 +239,12 @@ const PickUsername = () => {
                     ))}
                   </ul>
                 </div>
-              )} */}
+              )}
             </div>
           </div>
           <div className="flex gap-10 items-center justify-between">
             <button
-              className='text-lg font-semibold text-white bg-blue-500 rounded-xl transition-all px-8 py-3 w-full'
+              className={` ${usernameAvailability === 'Available' ? 'opacity-100' : 'opacity-50 cursor-not-allowed'} text-lg font-semibold text-white bg-blue-500 rounded-xl transition-all px-8 py-3 w-full`}
               onClick={handleSubmit}
               disabled={loading || usernameAvailability != 'Available'}
             >

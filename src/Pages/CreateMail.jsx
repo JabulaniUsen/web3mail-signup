@@ -91,8 +91,8 @@ const CreateMail = () => {
       setRegisterComplete(true);
 
       setTimeout(() => {
+        window.location.href = 'https://box.web3mail.club/mail/'
         // https://box.web3mail.club/mail/
-        navigate('/login');
         baseHelper.deleteFromLocalStorage('formData');
       }, 2000);
     }

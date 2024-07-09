@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Notification from '../Components/Notification';
 import bg1 from '../assets/topright.svg';
@@ -10,31 +10,29 @@ import ethLogo from '../assets/logos_ethereum.svg';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy, faSearch, faX } from '@fortawesome/free-solid-svg-icons';
+import EmailChecker from '../Components/EmailChecker';
 
 const NamesList = () => {
   const [notification, setNotification] = useState(null);
   const [selectedName, setSelectedName] = useState(null);
   const [expiryFilter, setExpiryFilter] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [nameList, setNameList] = useState([]);
 
-  const nameList = [
-    {
-      avater: ava,
-      name: 'Jabulani@web3mail.club',
-      expiresIn: '1',
-      address: '0x58492742983792749839810634',
-      createdOn: 'September 25, 2024',
-      expiry: 'September 25, 2025',
-    },
-    {
-      avater: ava,
-      name: 'Louis@web3mail.club',
-      expiresIn: '2',
-      address: '0x5455354653353483310634',
-      createdOn: 'September 14, 2024',
-      expiry: 'September 14, 2026',
-    },
-  ];
+//   useEffect(() => {
+//     const fetchNames = async () => {
+//       try {
+//         const response = await fetch('http://16.16.74.176:8000/api/v1/getAllUsers');
+//         const data = await response.json();
+//         console.log(data);
+//         setNameList(data);
+//       } catch (error) {
+//         console.error('Error fetching names:', error);
+//       }
+//     };
+
+//     fetchNames();
+//   }, []);
 
   const handleClickName = (name) => {
     setSelectedName(name);
@@ -66,7 +64,11 @@ const NamesList = () => {
           <ConnectButton />
         </div>
       </div>
-      <div className="lg:p-8 py-8 px-5 rounded-2xl w-full max-w-[35rem] bg-[#0c072c] mt-10 m-auto border-[0.1px] border-[#453995]">
+      <div className="lg:w-[35rem] w-[90%] mt-10 m-auto">
+        <EmailChecker/>
+      </div>
+      <div className="lg:p-8 py-8 px-5 rounded-2xl w-full lg:w-[35rem] w-[90%] bg-[#0c072c] mt-5 m-auto border-[0.1px] border-[#453995]">
+        
         <div className="top flex justify-between items-center flex-wrap gap-2">
           <div className="bg-[#110c30] px-3 py-2 rounded-lg">
             <select
