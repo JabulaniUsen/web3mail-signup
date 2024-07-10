@@ -221,7 +221,7 @@ const CreateMail = () => {
   };
 
   return (
-    <div className="bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter h-[120vh]">
+    <div className="bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter ">
       <div className="flex justify-between px-20 lg:mb-20 mb-10">
         <div className="logo">
           <img src={logo} alt="" />

@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import axiosInstance from '../config/axios';
 import Notification from '../Components/Notification';
 import bg1 from '../assets/topright.svg';
 import bg2 from '../assets/leftdown.svg';
 import logo from '../assets/logo.svg';
 import grid from '../assets/grid.svg';
-import ava from '../assets/ava.png';
-import ethLogo from '../assets/logos_ethereum.svg';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy, faSearch, faX } from '@fortawesome/free-solid-svg-icons';
 import EmailChecker from '../Components/EmailChecker';
+import ethLogo from '../assets/logos_ethereum.svg';
 
 const NamesList = () => {
   const [notification, setNotification] = useState(null);
@@ -19,20 +20,25 @@ const NamesList = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [nameList, setNameList] = useState([]);
 
-//   useEffect(() => {
-//     const fetchNames = async () => {
-//       try {
-//         const response = await fetch('http://16.16.74.176:8000/api/v1/getAllUsers');
-//         const data = await response.json();
-//         console.log(data);
-//         setNameList(data);
-//       } catch (error) {
-//         console.error('Error fetching names:', error);
-//       }
-//     };
+  const registerSecret = "thisisgonnabetheextralayerofsecurity";
 
-//     fetchNames();
-//   }, []);
+  useEffect(() => {
+    const fetchNames = async () => {
+      try {
+        const response = await axiosInstance.get('/getAllUsers', {
+            params: {
+                registerSecret: registerSecret
+            }
+        });
+        console.log(response);
+        setNameList(response.data);
+      } catch (error) {
+        console.error('Error fetching names:', error);
+      }
+    };
+
+    fetchNames();
+  }, []);
 
   const handleClickName = (name) => {
     setSelectedName(name);
@@ -65,10 +71,9 @@ const NamesList = () => {
         </div>
       </div>
       <div className="lg:w-[35rem] w-[90%] mt-10 m-auto">
-        <EmailChecker/>
+        <EmailChecker formData={{}} registerSecret={registerSecret} />
       </div>
       <div className="lg:p-8 py-8 px-5 rounded-2xl w-full lg:w-[35rem] w-[90%] bg-[#0c072c] mt-5 m-auto border-[0.1px] border-[#453995]">
-        
         <div className="top flex justify-between items-center flex-wrap gap-2">
           <div className="bg-[#110c30] px-3 py-2 rounded-lg">
             <select
@@ -126,7 +131,7 @@ const NamesList = () => {
         <Notification
           message={notification.message}
           type={notification.type}
-          onClose={handleCloseNotification}
+          onClose={() => setNotification(null)}
         />
       )}
     </div>
@@ -146,10 +151,6 @@ const NameDetailsModal = ({ name, onClose }) => {
       .catch((err) => {
         console.error('Failed to copy: ', err);
       });
-  };
-
-  const handleCloseNotification = () => {
-    setNotification(null);
   };
 
   const handleExtendSubscription = () => {
@@ -197,7 +198,7 @@ const NameDetailsModal = ({ name, onClose }) => {
         <Notification
           message={notification.message}
           type={notification.type}
-          onClose={handleCloseNotification}
+          onClose={() => setNotification(null)}
         />
       )}
     </div>

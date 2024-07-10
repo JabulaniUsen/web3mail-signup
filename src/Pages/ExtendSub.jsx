@@ -7,6 +7,7 @@ import bg1 from '../assets/topright.svg';
 import logo from '../assets/logo.svg';
 import grid from '../assets/grid.svg';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import ConfirmExtend from './ConfirmExtend';
 
 const ExtendSub = () => {
   const [years, setYears] = useState(1);
@@ -44,7 +45,8 @@ const ExtendSub = () => {
   };
 
   return (
-    <div className='lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter h-[100vh]'>
+    <>
+      <div className='lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter'>
       <div className="flex justify-between">
         <div className="logo">
           <img src={logo} alt="" />
@@ -61,7 +63,7 @@ const ExtendSub = () => {
       <img src={bg1} alt="" className="absolute top-0 right-0" />
       <img src={bg2} alt="" className="absolute bottom-0 left-0" />
 
-      <div className="bg-[#0c072c] m-auto mt-40 relative py-8 rounded-lg w-full max-w-[35rem] border-[0.1px] border-[#453995]">
+      {/* <div className="bg-[#0c072c] m-auto mt-40 relative py-8 rounded-lg w-full max-w-[35rem] border-[0.1px] border-[#453995]">
         <div className="px-5 border-b border-[#453995]">
           <div className="mb-14">
             <img src={bg1} alt="" className="lg:block hidden absolute top-0 right-0 w-[200px]" />
@@ -132,7 +134,9 @@ const ExtendSub = () => {
             </button>
           </div>
         </div>
-      </div>
+      </div> */}
+
+      <ConfirmExtend/>
 
       {showSuccessModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -149,6 +153,7 @@ const ExtendSub = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 
