@@ -4,7 +4,6 @@ import axiosInstance from '../config/axios';
 import Notification from '../Components/Notification';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import baseHelper from '../utils/helper';
-import { useAccount } from 'wagmi';
 import logo from '../assets/logo.svg';
 import bg1 from '../assets/topright.svg';
 import bg2 from '../assets/leftdown.svg';
@@ -16,7 +15,6 @@ const PickUsername = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
-  const { isConnected } = useAccount();
   const suggestionsRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -75,7 +73,8 @@ const PickUsername = () => {
       }
       setUsernameAvailability(available ? 'Available' : 'Not Avalable');
       if (!available) {
-        setSuggestions(generateSuggestions(username));
+        // setSuggestions(generateSuggestions(username));
+        setSuggestions([]);
       } else {
         setSuggestions([]);
       }
@@ -86,13 +85,13 @@ const PickUsername = () => {
     }
   };
 
-  const generateSuggestions = (base) => {
-    const suggestions = [];
-    for (let i = 1; i <= 4; i++) {
-      suggestions.push(`${base}${i}`);
-    }
-    return suggestions;
-  };
+  // const generateSuggestions = (base) => {
+  //   const suggestions = [];
+  //   for (let i = 1; i <= 4; i++) {
+  //     suggestions.push(`${base}${i}`);
+  //   }
+  //   return suggestions;
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
