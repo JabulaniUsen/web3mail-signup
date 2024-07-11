@@ -15,7 +15,6 @@ import { wagmiConfig } from '../config/wagmi';
 import Button from '../Components/Button';
 import { useAccount } from 'wagmi';
 import baseHelper from '../utils/helper';
-import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.svg';
 import Notification from '../Components/Notification';
 
@@ -23,7 +22,7 @@ const contractAddress = '0x70DE5b654834f10d06d4442E08f76b6f08974443';
 const baseBuyAmountInWei = 1100000000000000;
 
 const CreateMail = () => {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const [years, setYears] = useState(1);
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,7 +31,7 @@ const CreateMail = () => {
   const { username } = location.state || {};
   const [amountInEth, setAmountInEth] = useState(0.0011);
   const [amountInWei, setAmountInWei] = useState(baseBuyAmountInWei);
-  const navigate = useNavigate();
+
   const [notification, setNotification] = useState(null);
   const [registerComplete, setRegisterComplete] = useState(false);
   const [formData, setFormData] = useState({
@@ -62,10 +61,12 @@ const CreateMail = () => {
       registerFailCount++;
       console.log('register fail count', registerFailCount);
       await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log("connected address: ", address);
       console.log('retrying register');
       console.log(formData);
       const response = await axiosInstance.post('/register', {
         ...formData,
+        walletAddress: address,
         registerSecret: "thisisgonnabetheextralayerofsecurity"
       });
       console.log('register response', response.data);
