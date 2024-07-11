@@ -18,30 +18,30 @@ const ConfirmExtend = () => {
             <p className='font-semibold'>Back</p>
         </div>
         <div className="flex justify-center items-center flex-col gap-4">
-            <h2 className='text-white font-semibold text-2xl'>Confirm Details</h2>
+            <h2 className='text-white font-semibold lg:text-2xl text-xl'>Confirm Details</h2>
             <img src={wallet} alt="" />
-            <p className='text-white'>Double check these details before confirming in your wallet</p>
+            <p className='text-white text-center lg:text-base text-xs'>Double check these details before confirming in your wallet</p>
         </div>
 
         <div className=" mt-5 mx-5 flex flex-col gap-2 justify-between items-center">
             <div className="flex justify-between items-center bg-[#161134] py-4 px-6 rounded-xl w-full">
-                <p className='text-[#808080]'>Name</p>
+                <p className='text-[#808080] lg:text-base text-xs'>Name</p>
                 <div className="flex items-center gap-2">
-                    <p className='text-white font-semibold'>Jabulaniusen@web3mail.club</p>
+                    <p className='text-white font-semibold lg:text-base text-sm'>Jabulaniusen@web3mail.club</p>
                     <img src={avatar} alt="" />
                 </div>
             </div>
             <div className="flex justify-between items-center bg-[#161134] py-4 px-6 rounded-xl w-full">
-                <p className='text-[#808080]'>Action</p>
-                <p className='text-white font-semibold'>Extended registration</p>
+                <p className='text-[#808080] lg:text-base text-xs'>Action</p>
+                <p className='text-white font-semibold lg:text-base text-sm'>Extended registration</p>
             </div>
             <div className="flex justify-between items-center bg-[#161134] py-4 px-6 rounded-xl w-full">
-                <p className='text-[#808080]'>Duration</p>
-                <p className='text-white font-semibold'>1 year</p>
+                <p className='text-[#808080] lg:text-base text-xs'>Duration</p>
+                <p className='text-white font-semibold lg:text-base text-sm'>1 year</p>
             </div>
             <div className="flex justify-between items-center bg-[#161134] py-4 px-6 rounded-xl w-full">
-                <p className='text-[#808080]'>Cost</p>
-                <p className='text-white font-semibold'>0.0027ETH + fees</p>
+                <p className='text-[#808080] lg:text-base text-xs'>Cost</p>
+                <p className='text-white font-semibold lg:text-base text-sm'>0.0027ETH + fees</p>
             </div>
 
             <button className='text-white bg-[#3C77FB] hover:scale-[1.1] transition-all w-full rounded-2xl py-4 mt-5 w-[90%]'>Open Wellet</button>

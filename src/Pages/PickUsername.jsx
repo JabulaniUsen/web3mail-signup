@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAccount } from 'wagmi';
 import axiosInstance from '../config/axios';
 import Notification from '../Components/Notification';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
@@ -10,6 +11,7 @@ import bg2 from '../assets/leftdown.svg';
 import grid from '../assets/grid.svg';
 
 const PickUsername = () => {
+  const { isConnected } = useAccount();
   const [username, setUsername] = useState('');
   const [usernameAvailability, setUsernameAvailability] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
@@ -110,7 +112,8 @@ const PickUsername = () => {
       setNotification({ message: 'Username is already taken!', type: 'error' });
       return;
     }
-
+    
+    
     // Check if username field is empty
     if (username === '') {
       setNotification({
@@ -119,7 +122,7 @@ const PickUsername = () => {
       });
       return;
     }
-
+    
     const email = username;
 
     try {
@@ -128,16 +131,24 @@ const PickUsername = () => {
         email,
         registerSecret: "thisisgonnabetheextralayerofsecurity"
       };
-
+      
       baseHelper.addToLocalStorage('formData', dataToSend);
-
+      
       // Navigate after a delay
-      setLoading(true);
-      setTimeout(() => {
-        setLoading(false);
-        navigate('/signup', { state: { formData: dataToSend } });
-      }, 1000); // Adjust the delay as needed
-
+      if (!isConnected) {
+        setNotification({
+          message: 'Please connect wallet first',
+          type: 'error'
+        })
+      } else {
+        setLoading(true);
+        setTimeout(() => {
+          setLoading(false);
+          navigate('/signup', { state: { formData: dataToSend } });
+        }, 1000);
+      }
+      
+      
     } catch (error) {
       setLoading(false);
       console.error('Sign up error:', error);
@@ -243,7 +254,7 @@ const PickUsername = () => {
           </div>
           <div className="flex gap-10 items-center justify-between">
             <button
-              className={` ${usernameAvailability === 'Available' ? 'opacity-100' : 'opacity-50 cursor-not-allowed'} text-lg font-semibold text-white bg-blue-500 rounded-xl transition-all px-8 py-3 w-full`}
+              className={` ${usernameAvailability === 'Available' & isConnected ? 'opacity-100' : 'opacity-50 '} text-lg font-semibold text-white bg-blue-500 rounded-xl transition-all px-8 py-3 w-full`}
               onClick={handleSubmit}
               disabled={loading || usernameAvailability != 'Available'}
             >
