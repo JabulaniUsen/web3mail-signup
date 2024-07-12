@@ -93,7 +93,6 @@ const CreateMail = () => {
 
       setTimeout(() => {
         window.location.href = 'https://box.web3mail.club/mail/'
-        // https://box.web3mail.club/mail/
         baseHelper.deleteFromLocalStorage('formData');
       }, 2000);
     }
