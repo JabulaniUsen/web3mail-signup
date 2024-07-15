@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axiosInstance from '../config/axios';
 import Notification from '../Components/Notification';
 import bg1 from '../assets/topright.svg';
@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy, faSearch, faX } from '@fortawesome/free-solid-svg-icons';
 import EmailChecker from '../Components/EmailChecker';
 import ethLogo from '../assets/logos_ethereum.svg';
+import avatar from '../assets/ava.png';
 
 const NamesList = () => {
   const { address } = useAccount();
@@ -68,12 +69,14 @@ const NamesList = () => {
           <img src={logo} alt="" />
         </div>
         <div className="z-20 transition-all flex items-center gap-5">
-          <div className="flex item-center gap-1 cursor-pointer">
-            <img src={grid} alt="" />
-            <p className="text-[#3C77FB] text-lg font-semibold lg:block hidden">My Names</p>
+            <Link to='/registered-names'>
+              <div className="flex item-center gap-1 cursor-pointer">
+                <img src={grid} alt="" />
+                <p className='text-[#3C77FB] text-lg font-semibold'>My Names</p>
+              </div>
+            </Link>
+            <ConnectButton />
           </div>
-          <ConnectButton />
-        </div>
       </div>
       <div className="lg:w-[35rem] w-[90%] mt-10 m-auto">
         <EmailChecker formData={{}} registerSecret={registerSecret} />
@@ -116,6 +119,7 @@ const NamesList = () => {
               onClick={() => handleClickName(item)}
             >
               <div className="flex items-start gap-2">
+                <img src={avatar} alt="" />
                 <div className="">
                   <p className="text-white">{item.firstName}</p>
                   <small className="text-[#808080]">Expires on {formatExpiryDate(item.expiryDate)}</small>
@@ -180,6 +184,7 @@ const handleExtendSubscription = () => {
         <div className="border-b border-[#15131f] py-5 mb-5">
           <div className="flex justify-between items-center flex-wrap">
             <div className="flex items-start gap-2">
+              <img src={avatar} alt="" />
               <div className="">
                 <p className="text-white">{name.firstName}</p>
                 <small className="text-[#808080]">Expires on {formatExpiryDate(name.expiryDate)}</small>

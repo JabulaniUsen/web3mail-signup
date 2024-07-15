@@ -4,7 +4,7 @@ import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import bg1 from '../assets/topright.svg';
 import bg2 from '../assets/leftdown.svg';
 import successImg from '../assets/success.svg';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import axiosInstance from '../config/axios';
 import { ethers } from 'ethers';
@@ -224,7 +224,13 @@ const CreateMail = () => {
               <div className='logo'>
                 <img src={logo} alt='' />
               </div>
-              <div className=' z-20 transition-all'>
+              <div className="z-20 transition-all flex items-center gap-5">
+                <Link to='/registered-names'>
+                  <div className="flex item-center gap-1 cursor-pointer">
+                    <img src={grid} alt="" />
+                    <p className='text-[#3C77FB] text-lg font-semibold'>My Names</p>
+                  </div>
+                </Link>
                 <ConnectButton />
               </div>
             </div>

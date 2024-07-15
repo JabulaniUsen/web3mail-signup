@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 import axiosInstance from '../config/axios';
 import Notification from '../Components/Notification';
@@ -180,12 +180,14 @@ const PickUsername = () => {
           <img src={logo} alt="" />
         </div>
         <div className="z-20 transition-all flex items-center gap-5">
-          <div className="flex item-center gap-1 cursor-pointer">
-            <img src={grid} alt="" />
-            <p className="text-[#3C77FB] text-lg font-semibold lg:block hidden">My Names</p>
+            <Link to='/registered-names'>
+              <div className="flex item-center gap-1 cursor-pointer">
+                <img src={grid} alt="" />
+                <p className='text-[#3C77FB] text-lg font-semibold'>My Names</p>
+              </div>
+            </Link>
+            <ConnectButton />
           </div>
-          <ConnectButton />
-        </div>
       </div>
       <div className="lg:p-8 py-8 px-5 rounded-2xl w-full max-w-[35rem] mt-10 m-auto">
         <div className="mb-14">

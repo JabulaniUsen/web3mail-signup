@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axiosInstance from '../config/axios';
 import { useNavigate } from 'react-router-dom';
 import baseHelper from '../utils/helper';
+import Notification from './Notification';
 
 const EmailChecker = ({ onUsernameSelect, formData }) => {
   const [username, setUsername] = useState('');
@@ -63,27 +64,31 @@ const EmailChecker = ({ onUsernameSelect, formData }) => {
     const email = username;
     try {
       const dataToSend = {
-        ...formData,
+       ...formData,
         email,
         registerSecret: "thisisgonnabetheextralayerofsecurity"
       };
-
+  
       baseHelper.addToLocalStorage('formData', dataToSend);
-
-      // Navigate after a delay
+  
       setLoading(true);
+      console.log(usernameAvailability);
       setTimeout(() => {
         setLoading(false);
-        navigate('/signup', { state: { formData: dataToSend } });
-      }, 1000); // Adjust the delay as needed
-
+        if (usernameAvailability === 'Available') {
+          navigate('/signup', { state: { formData: dataToSend } });
+        } else {
+          setNotification({ message: 'Invalid name. Try another one', type: 'error' });
+        }
+      }, 1000); 
     } catch (error) {
       setLoading(false);
-      console.error('Sign up error:', error);
-      setNotification({
-        message: error.response?.data?.message || 'Sign up failed!',
-        type: 'error'
-      });
+      console.error('Omor error:', error);
+      if (usernameAvailability === 'Available') {
+        navigate('/signup', { state: { formData: dataToSend } });
+      } else {
+        setNotification({ message: 'Invalid name. Try another one', type: 'error' });
+      }
     }
   };
 
@@ -97,7 +102,7 @@ const EmailChecker = ({ onUsernameSelect, formData }) => {
         return;
       }
       if (username.length < 3) {
-        setUsernameAvailability('Username must be greater than 3 characters');
+        setUsernameAvailability('Username must be greater than 4 characters');
         return;
       }
       const response = await axiosInstance.get(`/emailAvailability/${username}`);
@@ -111,6 +116,10 @@ const EmailChecker = ({ onUsernameSelect, formData }) => {
       setUsernameAvailability(null);
       setSuggestions([]);
     }
+  };
+
+  const handleCloseNotification = () => {
+    setNotification(null);
   };
 
   const generateSuggestions = (base) => {
@@ -149,20 +158,13 @@ const EmailChecker = ({ onUsernameSelect, formData }) => {
           </div>
         )}
 
-        {suggestions.length > 0 && (
-          <div ref={suggestionsRef} className="mt-2 text-white p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134]">
-            <ul className='flex flex-col gap-4'>
-              {suggestions.map((suggestion, index) => (
-                <li key={index} onClick={() => { setUsername(suggestion); onUsernameSelect(suggestion); }} className="cursor-pointer hover:text-gray-400">
-                  {suggestion}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
       </div>
       {loading && <div className="loader"></div>}
-      {notification && <div className={`notification ${notification.type}`}>{notification.message}</div>}
+      {notification && <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={handleCloseNotification}
+        />}
     </div>
   );
 };

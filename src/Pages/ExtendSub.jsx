@@ -87,20 +87,15 @@ const ExtendSub = () => {
       });
       
       console.log(hash);
-      
       if (confirmationRes?.status !== 'success') {
         throw new Error('Error confirming payment');
       }
 
-      if (confirmationRes?.status == 'success') {
-        throw new Error('Error confirming payment');
-        setShowSuccessModal(true);
-        setNotification({
-          message: 'Subscription extended successfully',
-          type: 'success'
-        });
-      }
-
+      setShowSuccessModal(true);
+      setNotification({
+        message: 'Subscription extended successfully',
+        type: 'success'
+      });
 
       setTimeout(() => {
         navigate('/registered-names');

@@ -70,10 +70,6 @@ const SignUp = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleCloseNotification = () => {
-    setNotification(null);
-  };
-
 
 
   return (
