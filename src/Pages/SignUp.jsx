@@ -92,15 +92,15 @@ const SignUp = () => {
         <div className="logo">
           <img src={logo} alt="" />
         </div>
-        <Link to='/registered-names'>
           <div className="z-20 transition-all flex items-center gap-5 relative">
+          <Link to='/registered-names'>
             <div className="flex item-center gap-1 cursor-pointer">
               <img src={grid} alt="" />
               <p className='text-[#3C77FB] text-lg font-semibold'>My Names</p>
             </div>
+          </Link>
             <ConnectButton />
           </div>
-        </Link>
       </div>
       <div className="lg:p-8 py-8 px-5 rounded-2xl w-full max-w-[35rem] bg-[#0c072c] mt-10 m-auto border-[0.1px] border-[#453995]">
         <div className="mb-14">

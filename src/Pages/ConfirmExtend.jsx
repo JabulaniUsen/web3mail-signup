@@ -5,7 +5,7 @@ import bg1 from '../assets/topright.svg';
 import wallet from '../assets/wallet.svg';
 import avatar from '../assets/ava.png';
 
-const ConfirmExtend = ({ username, years, amountInEth, onConfirm, goBack }) => {
+const ConfirmExtend = ({ username, years, amountInEth, onConfirm, goBack, loading }) => {
   return (
     <div className="bg-[#0c072c] m-auto mt-40 relative py-8 rounded-lg w-full max-w-[35rem] border-[0.1px] border-[#453995]">
       <img src={bg1} alt="" className="lg:block hidden absolute top-0 right-0 w-[200px]" />
@@ -40,7 +40,9 @@ const ConfirmExtend = ({ username, years, amountInEth, onConfirm, goBack }) => {
           <p className='text-white font-semibold lg:text-base text-sm'>{amountInEth} ETH + fees</p>
         </div>
 
-        <button className='text-white bg-[#3C77FB] hover:scale-[1.1] transition-all w-full rounded-2xl py-4 mt-5 w-[90%]' onClick={onConfirm}>Open Wallet</button>
+        <button className='text-white bg-[#3C77FB] hover:bg-blue-800 transition-all w-full rounded-2xl py-4 mt-5 w-[90%]' onClick={onConfirm}>
+        {loading ? <div className="loader"></div> : 'Extend Mail'}
+        </button>
       </div>
     </div>
   );

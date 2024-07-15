@@ -1,4 +1,3 @@
-// /src/pages/ExtendSub.js
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -19,6 +18,7 @@ import { waitForTransactionReceipt } from 'viem/actions';
 import { useAccount } from 'wagmi';
 
 const contractAddress = '0x70DE5b654834f10d06d4442E08f76b6f08974443';
+const baseBuyAmountInWei = 1100000000000000;
 
 const ExtendSub = () => {
   const { isConnected, address } = useAccount();
@@ -28,13 +28,13 @@ const ExtendSub = () => {
   const [confirmExt, setConfirmExt] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const [username, setUsername] = useState('usenobong');
-  const [year, setYear] = useState('1');
+  const { username, name, id, years: initialYears } = location.state || {};
+  const [year, setYear] = useState(initialYears || 1);
   const [amountInEth, setAmountInEth] = useState(0.0011);
-  const [amountInWei, setAmountInWei] = useState(ethers.parseEther("0.0012"));
+  const [amountInWei, setAmountInWei] = useState(baseBuyAmountInWei);
   const [notification, setNotification] = useState(null);
-  const [extSubs, setExtSubs] = useState(true)
-
+  const [extSubs, setExtSubs] = useState(true);
+  
   useEffect(() => {
     getAmountByEmailAndYear();
   }, [years]);
@@ -85,16 +85,22 @@ const ExtendSub = () => {
       const confirmationRes = await waitForTransactionReceipt(wagmiConfig, {
         hash
       });
-
+      
+      console.log(hash);
+      
       if (confirmationRes?.status !== 'success') {
         throw new Error('Error confirming payment');
       }
 
-      setShowSuccessModal(true);
-      setNotification({
-        message: 'Subscription extended successfully',
-        type: 'success'
-      });
+      if (confirmationRes?.status == 'success') {
+        throw new Error('Error confirming payment');
+        setShowSuccessModal(true);
+        setNotification({
+          message: 'Subscription extended successfully',
+          type: 'success'
+        });
+      }
+
 
       setTimeout(() => {
         navigate('/registered-names');
@@ -115,8 +121,8 @@ const ExtendSub = () => {
   };
 
   const goBack = () => {
-    setConfirmExt(false)
-    setExtSubs(true)
+    setConfirmExt(false);
+    setExtSubs(true);
   }
 
   return (
@@ -186,7 +192,7 @@ const ExtendSub = () => {
             </div>
             <div className="bg-[#161134] rounded-lg flex items-center justify-between px-7 relative py-2">
               <p className='text-white'>
-                <span>{years}</span> Year{year > 1 ? 's' : ''} extension
+                <span>{years}</span> Year{years > 1 ? 's' : ''} extension
               </p>
               <div className="amount flex items-center justify-center my-2">
                 <p className="text-white ">
@@ -197,7 +203,7 @@ const ExtendSub = () => {
             <div className="flex gap-10 items-center justify-between">
               <button
                 className='w-full py-3 mt-6 text-lg font-semibold bg-white rounded-xl hover:text-white transition-all hover:bg-blue-900 text-[#3C77FB]'
-                onClick={() => navigate(-1)}
+                onClick={() => navigate('/registered-names')}
               >
                 Back
               </button>
@@ -213,7 +219,7 @@ const ExtendSub = () => {
         </div>
         }
 
-        {confirmExt && <ConfirmExtend username={username} years={years} amountInEth={amountInEth} onConfirm={handleExtend} goBack={goBack} />}
+        {confirmExt && <ConfirmExtend name={name} id={id} username={username} years={years} amountInEth={amountInEth} onConfirm={handleExtend} goBack={goBack} loading={loading} />}
         {showSuccessModal && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white p-5 rounded-lg shadow-lg max-w-sm w-full transform transition-transform duration-300">
@@ -221,7 +227,7 @@ const ExtendSub = () => {
               <p>Your subscription for {username} has been extended successfully!</p>
               <button
                 className="mt-5 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-200"
-                onClick={() => navigate('/names-list')}
+                onClick={() => navigate('/registered-names')}
               >
                 Close
               </button>
