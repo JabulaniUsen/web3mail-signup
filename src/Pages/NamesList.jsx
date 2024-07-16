@@ -61,7 +61,7 @@ const NamesList = () => {
   };
 
   return (
-    <div className="lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter h-[100vh]">
+    <div className="lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter">
       <img src={bg1} alt="" className="lg:block hidden absolute top-0 right-0" />
       <img src={bg2} alt="" className="lg:block absolute hidden bottom-0 left-0" />
       <div className="flex justify-between">

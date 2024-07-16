@@ -16,6 +16,7 @@ import Button from '../Components/Button';
 import { useAccount } from 'wagmi';
 import baseHelper from '../utils/helper';
 import logo from '../assets/logo.svg';
+import grid from '../assets/grid.svg';
 import Notification from '../Components/Notification';
 
 const contractAddress = '0x70DE5b654834f10d06d4442E08f76b6f08974443';
@@ -283,22 +284,22 @@ const CreateMail = () => {
             )}
         
             {showSuccessModal && (
-              <div className='p-12 m-auto rounded-2xl bg-white lg:w-[500px] w-[350px] flex flex-col justify-center items-center'>
-                <img src={successImg} alt='' className='lg:w-[330px] w-[200px]' />
-                <p className='text-[#3C77FB] lg:text-2xl text-lg font-semibold text-center'>
+              <div className='p-12 m-auto rounded-2xl bg-white lg:w-[400px] w-[350px] flex flex-col justify-center items-center'>
+                <img src={successImg} alt='' className='lg:w-[200px] w-[180px]' />
+                <p className='text-[#3C77FB] text-lg font-semibold text-center'>
                   {registerComplete ? (
                     <div>
-                      Mail Created Successfully and it is Valid for <span>{years}</span>
-                      <span>{years < 2 ? 'year' : 'years'}</span>
+                      Mail Created Successfully and it is Valid for <span> {years}</span>
+                      <span> {years < 2 ? 'year' : 'years'}</span>
                     </div>
                   ) : (
                     <div>
                       <div>
                         Payment Successful,
                         <br />
-                        kindly wait while we create your mail
+                        This may take sometime. Don't refresh...
                       </div>
-                      <div className='text-red-700 creating-mail'>Creating Mail...</div>
+                      <div className='text-red-700 creating-mail'>Creating Mail... This may take sometime. Don't refresh.</div>
                     </div>
                   )}
                 </p>
