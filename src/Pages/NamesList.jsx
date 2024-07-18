@@ -165,7 +165,7 @@ const NameDetailsModal = ({ name, onClose }) => {
 const handleExtendSubscription = () => {
   navigate('/extend-subscription', {
     state: {
-      username: name.firstName,
+      username: name.email,
       years: parseInt(name.expiryDate, 10),
       name: name.firstName,
       id: name.id
@@ -186,7 +186,7 @@ const handleExtendSubscription = () => {
             <div className="flex items-start gap-2">
               <img src={avatar} alt="" />
               <div className="">
-                <p className="text-white">{name.firstName}</p>
+                <p className="text-white">{name.email}</p>
                 <small className="text-[#808080]">Expires on {formatExpiryDate(name.expiryDate)}</small>
               </div>
             </div>
