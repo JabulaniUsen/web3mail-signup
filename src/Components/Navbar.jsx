@@ -30,7 +30,7 @@ const Navbar = () => {
                 {subMenu && 
                 <div className="p-5 rounded-xl bg-[#161134] flex flex-col gap-3 items-start absolute top-10 right-[9rem]">
                     <p>
-                        <Link>
+                        <Link to='/availiable-newsletters'>
                             <p className='text-[#808080] hover:text-[#3C77FB] transition-all'>Browse Available Newsletter</p>
                         </Link>
                     </p>
