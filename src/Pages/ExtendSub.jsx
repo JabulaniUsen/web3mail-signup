@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGasPump, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faGasPump, faMinus, faPlus, faSignLanguage } from '@fortawesome/free-solid-svg-icons';
 import { web3mailABI } from '../utils/web3mail/contractABI';
 import bg2 from '../assets/leftdown.svg';
 import bg1 from '../assets/topright.svg';
@@ -16,6 +16,7 @@ import ConfirmExtend from './ConfirmExtend';
 import Notification from '../Components/Notification';
 import { waitForTransactionReceipt } from 'viem/actions';
 import { useAccount } from 'wagmi';
+import Navbar from '../Components/Navbar';
 
 const contractAddress = '0x70DE5b654834f10d06d4442E08f76b6f08974443';
 const baseBuyAmountInWei = 1100000000000000;
@@ -54,6 +55,7 @@ const ExtendSub = () => {
       const res = await axiosInstance.get(
         `/extendSubscriptionAmount/${username}/${years}`
       );
+      console.log(username, years);
       console.log(res);
       const amountInWeiFromRes = res?.data?.amount;
       const ethValue = ethers.formatEther(amountInWeiFromRes);
@@ -77,39 +79,42 @@ const ExtendSub = () => {
           value: amountInWei
         }
       });
-
+      console.log('Transaction hash:', hash);
+  
       if (!hash) {
         throw new Error('Error making payment');
       }
-
+  
       const confirmationRes = await waitForTransactionReceipt(wagmiConfig, {
         hash
       });
-      
-      console.log(hash);
+  
+      console.log('Confirmation response:', confirmationRes);
+  
       if (confirmationRes?.status !== 'success') {
         throw new Error('Error confirming payment');
+      } else {
+        setShowSuccessModal(true);
+        setNotification({
+          message: 'Subscription extended successfully',
+          type: 'success'
+        });
       }
-
-      setShowSuccessModal(true);
-      setNotification({
-        message: 'Subscription extended successfully',
-        type: 'success'
-      });
-
+  
       setTimeout(() => {
         navigate('/registered-names');
       }, 2000);
-
+  
     } catch (error) {
       setLoading(false);
-      console.log(error.message);
+      console.error('Error during transaction:', error.message);
       setNotification({
         message: error?.message || 'Error making payment',
         type: 'error'
       });
     }
   };
+  
 
   const handleCloseNotification = () => {
     setNotification(null);
@@ -123,18 +128,7 @@ const ExtendSub = () => {
   return (
     <>
       <div className='lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter'>
-        <div className="flex justify-between">
-          <div className="logo">
-            <img src={logo} alt="" />
-          </div>
-          <div className="z-20 transition-all flex items-center gap-5">
-            <div className="flex item-center gap-1 cursor-pointer">
-              <img src={grid} alt="" />
-              <p className="text-[#3C77FB] text-lg font-semibold lg:block hidden">My Names</p>
-            </div>
-            <ConnectButton />
-          </div>
-        </div>
+        <Navbar/>
 
         <img src={bg1} alt="" className="absolute top-0 right-0" />
         <img src={bg2} alt="" className="absolute bottom-0 left-0" />

@@ -13,6 +13,7 @@ import { faCopy, faSearch, faX } from '@fortawesome/free-solid-svg-icons';
 import EmailChecker from '../Components/EmailChecker';
 import ethLogo from '../assets/logos_ethereum.svg';
 import avatar from '../assets/ava.png';
+import Navbar from '../Components/Navbar';
 
 const NamesList = () => {
   const { address } = useAccount();
@@ -24,22 +25,43 @@ const NamesList = () => {
 
   const registerSecret = "thisisgonnabetheextralayerofsecurity";
 
-  useEffect(() => {
-    const fetchNames = async () => {
-      try {
-        const response = await axiosInstance.get(`/getAllMails/${address}`, {
-          secret: registerSecret
-        });
-        console.log(response);
-        setNameList(Array.isArray(response.data.data) ? response.data.data : []);
-      } catch (error) {
-        console.error('Error fetching names:', error);
-        setNotification({ type: 'error', message: 'Something went wrong. Try again later' });
-      }
-    };
+  const stripEmailDomain = (email) => {
+    return email.split('@')[0];
+  };
 
-    fetchNames();
-  }, [address]);
+  useEffect(() => {
+  const fetchNames = async () => {
+    try {
+      const response = await axiosInstance.get(`/getUsersByExpiry/${expiryFilter || 1}`);
+      console.log(response);
+      const processedNames = Array.isArray(response.data.data)
+        ? response.data.data.map(item => {
+            const yearsBetween = calculateYearsBetweenDates(item.createdAt, item.expiryDate);
+            localStorage.setItem(item._id, yearsBetween); // Store the years in local storage
+            return {
+              ...item,
+              email: stripEmailDomain(item.email)
+            };
+          })
+        : [];
+      setNameList(processedNames);
+    } catch (error) {
+      console.error('Error fetching names:', error);
+      setNotification({ type: 'error', message: error.response.data.message });
+    }
+  };
+
+  fetchNames();
+}, [expiryFilter]);
+
+
+  const calculateYearsBetweenDates = (startDate, endDate) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate * 1000);
+    const years = end.getFullYear() - start.getFullYear();
+    return years;
+  };
+  
 
   const handleClickName = (name) => {
     setSelectedName(name);
@@ -50,9 +72,8 @@ const NamesList = () => {
   };
 
   const filteredNames = nameList.filter((item) => {
-    const matchesExpiry = expiryFilter ? item.expiryDate === parseInt(expiryFilter, 10) : true;
     const matchesSearch = item.firstName.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesExpiry && matchesSearch;
+    return matchesSearch;
   });
 
   const formatExpiryDate = (timestamp) => {
@@ -61,23 +82,10 @@ const NamesList = () => {
   };
 
   return (
-    <div className="lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter">
+    <div className="lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter min-h-[100vh]">
       <img src={bg1} alt="" className="lg:block hidden absolute top-0 right-0" />
       <img src={bg2} alt="" className="lg:block absolute hidden bottom-0 left-0" />
-      <div className="flex justify-between">
-        <div className="logo">
-          <img src={logo} alt="" />
-        </div>
-        <div className="z-20 transition-all flex items-center gap-5">
-            <Link to='/registered-names'>
-              <div className="flex item-center gap-1 cursor-pointer">
-                <img src={grid} alt="" />
-                <p className='text-[#3C77FB] text-lg font-semibold'>My Names</p>
-              </div>
-            </Link>
-            <ConnectButton />
-          </div>
-      </div>
+      <Navbar/>
       <div className="lg:w-[35rem] w-[90%] mt-10 m-auto">
         <EmailChecker formData={{}} registerSecret={registerSecret} />
       </div>
@@ -92,11 +100,11 @@ const NamesList = () => {
               onChange={(e) => setExpiryFilter(e.target.value)}
             >
               <option value="">Expiry Date</option>
-              <option value="1752421332">1 year</option>
-              <option value="1752421332">2 years</option>
-              <option value="1752421332">3 years</option>
-              <option value="1752421332">4 years</option>
-              <option value="1752421332">5 years</option>
+              <option value="1">1 year</option>
+              <option value="2">2 years</option>
+              <option value="3">3 years</option>
+              <option value="4">4 years</option>
+              <option value="5">5 years</option>
             </select>
           </div>
           <div className="bg-[#110c30] px-3 py-2 rounded-lg text-[#808080] flex items-center gap-2">
@@ -145,7 +153,8 @@ const NamesList = () => {
 const NameDetailsModal = ({ name, onClose }) => {
   const [notification, setNotification] = useState(null);
   const navigate = useNavigate();
-  const formattedAddress = `${name.walletAddress.slice(0, 5)}...${name.walletAddress.slice(-5)}`;
+  const walletAddress = name.walletAddress || '';
+  const formattedAddress = walletAddress ? `${walletAddress.slice(0, 5)}...${walletAddress.slice(-5)}` : 'N/A';
 
   const formatExpiryDate = (timestamp) => {
     const date = new Date(timestamp * 1000);
@@ -153,26 +162,29 @@ const NameDetailsModal = ({ name, onClose }) => {
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(name.walletAddress)
-      .then(() => {
-        setNotification({ message: 'Copied to clipboard', type: 'success' });
-      })
-      .catch((err) => {
-        console.error('Failed to copy: ', err);
-      });
+    if (walletAddress) {
+      navigator.clipboard.writeText(walletAddress)
+        .then(() => {
+          setNotification({ message: 'Copied to clipboard', type: 'success' });
+        })
+        .catch((err) => {
+          console.error('Failed to copy: ', err);
+        });
+    } else {
+      setNotification({ message: 'No wallet address to copy', type: 'error' });
+    }
   };
 
-const handleExtendSubscription = () => {
-  navigate('/extend-subscription', {
-    state: {
-      username: name.email,
-      years: parseInt(name.expiryDate, 10),
-      name: name.firstName,
-      id: name.id
-    }
-  });
-};
-
+  const handleExtendSubscription = () => {
+    navigate('/extend-subscription', {
+      state: {
+        username: name.email,
+        years: parseInt(name.expiryDate, 10),
+        name: name.firstName,
+        id: name._id
+      }
+    });
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70">
@@ -215,5 +227,6 @@ const handleExtendSubscription = () => {
     </div>
   );
 };
+
 
 export default NamesList;

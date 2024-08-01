@@ -11,6 +11,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import Button from '../Components/Button';
 import grid from '../assets/grid.svg';
 import baseHelper from '../utils/helper';
+import Navbar from '../Components/Navbar';
 
 const SignUp = () => {
   const { isConnected } = useAccount();
@@ -84,20 +85,7 @@ const SignUp = () => {
         alt=""
         className="lg:block absolute hidden bottom-0 left-0"
       />
-      <div className="flex justify-between">
-        <div className="logo">
-          <img src={logo} alt="" />
-        </div>
-          <div className="z-20 transition-all flex items-center gap-5 relative">
-          <Link to='/registered-names'>
-            <div className="flex item-center gap-1 cursor-pointer">
-              <img src={grid} alt="" />
-              <p className='text-[#3C77FB] text-lg font-semibold'>My Names</p>
-            </div>
-          </Link>
-            <ConnectButton />
-          </div>
-      </div>
+      <Navbar/>
       <div className="lg:p-8 py-8 px-5 rounded-2xl w-full max-w-[35rem] bg-[#0c072c] mt-10 m-auto border-[0.1px] border-[#453995]">
         <div className="mb-14">
           <h2 className="lg:text-3xl text-2xl font-bold mb-2 text-white ">

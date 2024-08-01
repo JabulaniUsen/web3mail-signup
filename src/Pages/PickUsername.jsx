@@ -9,6 +9,7 @@ import logo from '../assets/logo.svg';
 import bg1 from '../assets/topright.svg';
 import bg2 from '../assets/leftdown.svg';
 import grid from '../assets/grid.svg';
+import Navbar from '../Components/Navbar';
 
 const PickUsername = () => {
   const { isConnected } = useAccount();
@@ -164,7 +165,7 @@ const PickUsername = () => {
   };
 
   return (
-    <div className="lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter ">
+    <div className="lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter h-[110vh]">
       <img
         src={bg1}
         alt=""
@@ -175,20 +176,7 @@ const PickUsername = () => {
         alt=""
         className="lg:block absolute hidden bottom-0 left-0"
       />
-      <div className="flex justify-between">
-        <div className="logo">
-          <img src={logo} alt="" />
-        </div>
-        <div className="z-20 transition-all flex items-center gap-5">
-            <Link to='/registered-names'>
-              <div className="flex item-center gap-1 cursor-pointer">
-                <img src={grid} alt="" />
-                <p className='text-[#3C77FB] text-lg font-semibold'>My Names</p>
-              </div>
-            </Link>
-            <ConnectButton />
-          </div>
-      </div>
+      <Navbar/>
       <div className="lg:p-8 py-8 px-5 rounded-2xl w-full max-w-[35rem] mt-10 m-auto">
         <div className="mb-14">
           <h2 className="lg:text-3xl text-2xl font-bold mb-2 text-white text-center">

@@ -18,6 +18,7 @@ import baseHelper from '../utils/helper';
 import logo from '../assets/logo.svg';
 import grid from '../assets/grid.svg';
 import Notification from '../Components/Notification';
+import Navbar from '../Components/Navbar';
 
 const contractAddress = '0x70DE5b654834f10d06d4442E08f76b6f08974443';
 const baseBuyAmountInWei = 1100000000000000;
@@ -201,7 +202,7 @@ const CreateMail = () => {
             const res = await axiosInstance.get(
               `/subscriptionAmount/${email}/${years}`
             );
-            console.log(res.data.amount);
+            console.log('amount:', res.data.amount);
             if (!res || !res?.data?.amount) {
               console.log('error getting amount', res);
               return;
@@ -221,20 +222,7 @@ const CreateMail = () => {
         
         return (
           <div className='bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter '>
-            <div className='flex justify-between px-20 lg:mb-20 mb-10'>
-              <div className='logo'>
-                <img src={logo} alt='' />
-              </div>
-              <div className="z-20 transition-all flex items-center gap-5">
-                <Link to='/registered-names'>
-                  <div className="flex item-center gap-1 cursor-pointer">
-                    <img src={grid} alt="" />
-                    <p className='text-[#3C77FB] text-lg font-semibold'>My Names</p>
-                  </div>
-                </Link>
-                <ConnectButton />
-              </div>
-            </div>
+            <Navbar/>
         
             <img src={bg1} alt='' className='absolute top-0 right-0' />
             <img src={bg2} alt='' className='absolute bottom-0 left-0' />
@@ -297,9 +285,8 @@ const CreateMail = () => {
                       <div>
                         Payment Successful,
                         <br />
-                        This may take sometime. Don't refresh...
                       </div>
-                      <div className='text-red-700 creating-mail'>Creating Mail... This may take sometime. Don't refresh.</div>
+                      <div className='text-red-700 creating-mail text-sm'>Creating Mail... <br /> This may take sometime. Don't refresh.</div>
                     </div>
                   )}
                 </p>
