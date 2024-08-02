@@ -7,6 +7,7 @@ import bg2 from '../assets/leftdown.svg';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 
+
 const PostPage = () => {
   const { postId } = useParams();
   const [post, setPost] = useState(null);
@@ -53,7 +54,7 @@ const PostPage = () => {
       const selectedPost = dummyPosts.find((p) => p.id === parseInt(postId));
       setPost(selectedPost);
       setLoading(false);
-    }, 1500); 
+    }, 2000); // Simulate a 2-second loading time
   }, [postId]);
 
   return (
@@ -71,7 +72,7 @@ const PostPage = () => {
       <Navbar />
       <div className="lg:p-8 py-8 px-5 rounded-2xl w-full max-w-[58rem] mt-10 m-auto">
         {loading ? (
-          <div>
+          <div className="skeleton-wrapper">
             <Skeleton height={40} width={300} />
             <Skeleton count={3} />
             <div className="flex justify-between items-center mt-5">

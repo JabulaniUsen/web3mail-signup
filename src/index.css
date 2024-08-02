@@ -41,3 +41,15 @@
 .creating-mail {
   animation: fadeInOut 2s infinite;
 }
+
+/* skeleton.css */
+
+:root {
+  --skeleton-color: #333;
+  --skeleton-highlight-color: #444;
+}
+
+.skeleton-wrapper .react-loading-skeleton {
+  background-color: var(--skeleton-color);
+  background-image: linear-gradient(90deg, var(--skeleton-color), var(--skeleton-highlight-color), var(--skeleton-color));
+}
