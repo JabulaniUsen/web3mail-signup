@@ -6,67 +6,50 @@ import bg1 from '../assets/topright.svg';
 import bg2 from '../assets/leftdown.svg';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-
+import axiosInstance from '../config/axios';
+import { format } from 'date-fns';
 
 const PostPage = () => {
-  const { postId } = useParams();
+  const { id } = useParams(); 
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState(null);
 
   useEffect(() => {
-    // Dummy data for testing
-    const dummyPosts = [
-      {
-        id: 1,
-        coverImage: 'path_to_cover_image_1.jpg',
-        title: 'Exploring the Future of Web3',
-        datePosted: 'Jan 1, 2024',
-        summary: 'Discover the latest trends in Web3 technology...',
-        writerImage: 'path_to_writer_image_1.jpg',
-        writerName: 'John Doe',
-        content: 'In recent years, the world of cryptocurrency has seen a remarkable surge...',
-      },
-      {
-        id: 2,
-        coverImage: 'path_to_cover_image_2.jpg',
-        title: 'Blockchain Innovations',
-        datePosted: 'Feb 15, 2024',
-        summary: 'Learn about the newest innovations in blockchain...',
-        writerImage: 'path_to_writer_image_2.jpg',
-        writerName: 'Jane Smith',
-        content: 'Blockchain innovations are revolutionizing industries...',
-      },
-      {
-        id: 3,
-        coverImage: 'path_to_cover_image_3.jpg',
-        title: 'Crypto Adoption Trends',
-        datePosted: 'Mar 10, 2024',
-        summary: 'An in-depth look at the latest trends in crypto adoption...',
-        writerImage: 'path_to_writer_image_3.jpg',
-        writerName: 'Alice Johnson',
-        content: 'Crypto adoption trends are on the rise...',
-      },
-      // Add more dummy posts as needed
-    ];
+    const fetchPost = async () => {
+      setLoading(true);
+      try {
+        console.log('Fetching post with ID:', id); 
+        const response = await axiosInstance.get(`/getNewsletter/${id}`);
+        console.log('Post data:', response.data); 
+        setPost(response.data);
+      } catch (error) {
+        console.error('Error fetching post details:', error);
+        setNotification({ message: 'Error fetching post details', type: 'error' });
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    setTimeout(() => {
-      const selectedPost = dummyPosts.find((p) => p.id === parseInt(postId));
-      setPost(selectedPost);
+    if (id) {
+      fetchPost();
+    } else {
+      console.error('No id provided');
+      setNotification({ message: 'Post ID is missing', type: 'error' });
       setLoading(false);
-    }, 2000); // Simulate a 2-second loading time
-  }, [postId]);
+    }
+  }, [id]);
 
   return (
-    <div className="lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter h-[110vh]">
+    <div className="lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter ">
       <img
         src={bg1}
-        alt=""
+        alt="Background top right"
         className="lg:block hidden absolute top-0 right-0"
       />
       <img
         src={bg2}
-        alt=""
+        alt="Background bottom left"
         className="lg:block absolute hidden bottom-0 left-0"
       />
       <Navbar />
@@ -79,35 +62,43 @@ const PostPage = () => {
               <Skeleton circle={true} height={50} width={50} />
               <Skeleton height={30} width={200} />
             </div>
-            <Skeleton height={150} />
+            <Skeleton height={250} />
           </div>
-        ) : (
-          <div className="text-white">
-            <h1 className='lg:text-3xl text-xl font-bold lg:w-[60%]'>{post.title}</h1>
-            <p className='text-[#808080] my-5'>{post.summary}</p>
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-5 text-[#808080] my-5">
-                <div className="flex items-center gap-3">
-                  <img src={post.writerImage} alt="" className='p-3 rounded-full border' />
-                  <p>By {post.writerName}</p>
-                </div>
-                <p>Web3mail - <span>{post.datePosted}</span></p>
+        ) : post ? (
+          <>
+            <div className="relative">
+              <img
+                src={post.coverImageUrl || 'default-image-url.jpg'}
+                alt={post.title || 'Default title'}
+                className="w-full  object-cover rounded-t-lg"
+              />
+            </div>
+            <div className="p-5">
+              <p className="text-[#808080] text-xs">{format(new Date(post.date), 'MMMM dd, yyyy h:mm a') || 'Date not available'}</p>
+              <h3 className="text-3xl text-white font-semibold mt-5">{post.maillistName || 'Newsletter Title'}</h3>
+              <p className="mt-2 text-[#808080]">{post.subtitle || 'Subtitle not available'}</p>
+              <div className="flex items-center gap-2 mt-5">
+                <img
+                  src={post.writerImage || 'default-writer-image.jpg'}
+                  alt={post.writersName || 'Unknown writer'}
+                  className="w-10 h-10 object-cover rounded-full border"
+                />
+                <p className='text-md text-[#808080]'>{post.writersName || 'Writer Name'}</p>
               </div>
-              <button className='bg-[#B2C8FA] text-white rounded-2xl hover:shadow-xl transition-all hover:scale-[1.1] py-2 px-10'>Unsubscribe to Newsletter</button>
+              <p className="mt-5 text-[#808080]">{post.summary || 'Content not available'}</p>
             </div>
-            <div className="postBody mt-12">
-              <p className='text-[#808080]'>{post.content}</p>
-            </div>
-          </div>
+          </>
+        ) : (
+          <p className="text-white">Post not found</p>
+        )}
+        {notification && (
+          <Notification
+            message={notification.message}
+            type={notification.type}
+            onClose={() => setNotification(null)}
+          />
         )}
       </div>
-      {notification && (
-        <Notification
-          message={notification.message}
-          type={notification.type}
-          onClose={() => setNotification(null)}
-        />
-      )}
     </div>
   );
 };

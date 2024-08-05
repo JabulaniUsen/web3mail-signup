@@ -7,7 +7,7 @@ import Button from '../Components/Button';
 import Navbar from '../Components/Navbar';
 import axiosInstance from '../config/axios';
 import { useNavigate } from 'react-router-dom';
-
+import Resizer from 'react-image-file-resizer';
 
 const CreateMailist = () => {
   const { isConnected } = useAccount();
@@ -22,9 +22,9 @@ const CreateMailist = () => {
     coverImageUrl: '',
     groupId: ''
   });
+  const [previewImage, setPreviewImage] = useState(null);
 
   const navigate = useNavigate();
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,33 +34,28 @@ const CreateMailist = () => {
     });
   };
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Assuming you have an endpoint to upload the image and get back a URL
-      const formData = new FormData();
-      formData.append('file', file);
 
-      try {
-        const response = await axiosInstance.post('/upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
+const handleFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    Resizer.imageFileResizer(
+      file,
+      800, 
+      800, 
+      'JPEG', 
+      90, 
+      0, 
+      (uri) => {
+        setPreviewImage(uri);
         setFormData((prevFormData) => ({
           ...prevFormData,
-          coverImageUrl: response.data.url, // Assuming the response contains the URL of the uploaded image
+          coverImageUrl: uri, 
         }));
-        setNotification({ type: 'success', message: error.response.data.message });
-        setLoading(false);
-        setFormData([])
-        navigate('/');
-      } catch (error) {
-        console.error('Error uploading file:', error);
-        setNotification({ type: 'error', message: error.response.data.message });
-      }
-    }
-  };
+      },
+      'base64'
+    );
+  }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -72,8 +67,9 @@ const CreateMailist = () => {
     try {
       const response = await axiosInstance.post('/createNewsletter', dataToSend);
       console.log('Response:', response.data);
-      setNotification({ message: 'Newsletter created successfully', type: 'success' });
       setLoading(false);
+      navigate('/');
+      setNotification({ message: 'Newsletter created successfully', type: 'success' });
     } catch (error) {
       console.error('Something went wrong, try again', error);
       setNotification({ message: 'Something went wrong, try again', type: 'error' });
@@ -178,6 +174,11 @@ const CreateMailist = () => {
               className="w-full bg-transparent p-2 transition-all py-3 lg:py-5 rounded-xl text-white outline-none"
               required
             />
+            {previewImage && (
+              <div className="mt-4">
+                <img src={previewImage} alt="Preview" className="rounded-xl" />
+              </div>
+            )}
           </div>
           <div className="flex gap-10 items-center justify-between">
             <Button walletConnected={isConnected} onClick={handleSubmit}>

@@ -8,24 +8,28 @@ import { faSearch, faX } from '@fortawesome/free-solid-svg-icons';
 import bg1 from '../assets/topright.svg';
 import bg2 from '../assets/leftdown.svg';
 import axiosInstance from '../config/axios';
+import { format } from 'date-fns';
 
 const AvailiableNewsletters = () => {
   const { isConnected } = useAccount();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
-  const [searchField, setSearchField] = useState('')
+  const [searchField, setSearchField] = useState('');
   const navigate = useNavigate();
-
-  const registerSecret = "thisisgonnabetheextralayerofsecurity";
 
   useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
       try {
         const response = await axiosInstance.get('/getAllNewsletters');
-        setPosts(response.data);
-        console.log(response.data);
+        const formattedPosts = response.data.map(post => ({
+          ...post,
+          date: format(new Date(post.date), 'MMMM dd, yyyy h:mm a')
+        }));
+        setPosts(formattedPosts);
+        console.log('Fetched Posts:', formattedPosts); // Log fetched posts
+        formattedPosts.forEach(post => console.log('Post ID:', post._id));
       } catch (error) {
         console.error(error);
         setNotification({ message: 'Error fetching newsletters', type: 'error' });
@@ -36,9 +40,19 @@ const AvailiableNewsletters = () => {
     fetchPosts();
   }, []);
 
-  const handlePostClick = (postId) => {
-    navigate(`/post/${postId}`);
+  const handlePostClick = (id) => {
+    console.log('Navigating to post with ID:', id);
+    if (id) {
+      navigate(`/post/${id}`); 
+    } else {
+      console.error('Invalid id:', id);
+    }
   };
+
+  const filteredPosts = posts.filter(post =>
+    post.maillistName.toLowerCase().includes(searchField.toLowerCase()) ||
+    post.summary.toLowerCase().includes(searchField.toLowerCase())
+  );
 
   return (
     <div className="lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter">
@@ -70,12 +84,11 @@ const AvailiableNewsletters = () => {
                 <FontAwesomeIcon icon={faSearch} className='text-gray-400' />
                 <input
                   type="text"
-                  name="Search posts..."
+                  name="searchField"
                   placeholder="Search posts..."
                   value={searchField}
-                  onChange={(e) => setSearchField(e.value)}
+                  onChange={(e) => setSearchField(e.target.value)}
                   className="w-full outline-none bg-transparent"
-                  required
                 />
                 <FontAwesomeIcon icon={faX} className='text-gray-400 mr-2 cursor-pointer hover:text-white hover:scale-[1.2] transition-all' onClick={() => setSearchField('')} />
               </div>
@@ -84,15 +97,15 @@ const AvailiableNewsletters = () => {
         </form>
         <div className="lg:p-8 py-8 px-5 rounded-2xl w-full max-w-[68rem] mt-10 m-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-            {posts.map((post) => (
+            {filteredPosts.map((post, index) => (
               <div
-                key={post.id}
+                key={index}
                 className="bg-[#0c072c] rounded-xl text-white transition-all hover:shadow-xl  hover:bg-[#221b50] cursor-pointer border border-[#453995]"
-                onClick={() => handlePostClick(post.id)}
+                onClick={() => handlePostClick(post._id)}
               >
                 <div className="relative ">
                   <img
-                    src={post.coverImage}
+                    src={post.coverImageUrl}
                     alt={post.title}
                     className="w-full h-40 object-cover rounded-t-lg "
                   />
@@ -103,16 +116,15 @@ const AvailiableNewsletters = () => {
                 <div className="p-3">
                   <p className="text-[#808080] text-xs">Web3Mail - {post.date}</p>
                   <h3 className="text-xl font-semibold mt-5">{post.maillistName}</h3>
-                  <p className="mt-2 text-[#808080]">{post.summary}</p>
+                  <p className="mt-2 text-[#808080]">{post.subtitle}</p>
                   <div className="flex items-center gap-1 mt-5">
                     <img
-                      src={post.coverImageUrl}
                       alt={post.writersName}
                       className="w-5 h-5 object-cover rounded-full border"
                     />
                     <p className='text-xs text-[#808080]'>{post.writersName}</p>
                   </div>
-                <button className='py-2 bg-[#3C77FB] text-white mt-5  rounded-3xl w-full mb-1 hover:bg-blue-700'>Subscribe to Newsletter</button>
+                  <button className='py-2 bg-[#3C77FB] text-white mt-5  rounded-3xl w-full mb-1 hover:bg-blue-700'>Subscribe to Newsletter</button>
                 </div>
               </div>
             ))}

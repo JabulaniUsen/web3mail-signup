@@ -19,7 +19,7 @@ function App() {
         <Route path='/registered-names' element={<NamesList/>} />
         <Route path='/create-mailist' element={<CreateMailist/>} />
         <Route path='/availiable-newsletters' element={<AvailiableNewsletters/>} />
-        <Route path="/post/:postId" element={<PostPage />} />
+        <Route path="/post/:id" element={<PostPage />} />
       </Routes>
     </Router>
   );
