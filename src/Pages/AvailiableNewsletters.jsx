@@ -23,7 +23,6 @@ const AvailiableNewsletters = () => {
   const [searchField, setSearchField] = useState('');
   const navigate = useNavigate();
 
-  // Define an array of writer images
   const writerImages = [
     user1,
     user2,

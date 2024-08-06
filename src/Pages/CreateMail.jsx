@@ -4,7 +4,7 @@ import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import bg1 from '../assets/topright.svg';
 import bg2 from '../assets/leftdown.svg';
 import successImg from '../assets/success.svg';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, Navigate, useLocation } from 'react-router-dom';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import axiosInstance from '../config/axios';
 import { ethers } from 'ethers';
@@ -92,7 +92,7 @@ const CreateMail = () => {
         setRegisterComplete(true);
         
         setTimeout(() => {
-          window.location.href = 'https://box.web3mail.club/mail/';
+          Navigate('/');
           baseHelper.deleteFromLocalStorage('formData');
         }, 2000);
         }

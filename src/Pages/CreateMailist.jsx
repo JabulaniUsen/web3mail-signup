@@ -13,7 +13,7 @@ import 'react-quill/dist/quill.snow.css';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 
-const CreateMailist = () => {
+const CreateMaillist = () => {
   const { isConnected } = useAccount();
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
@@ -135,7 +135,7 @@ const CreateMailist = () => {
       <div className="lg:p-8 py-8 px-5 rounded-2xl w-full max-w-[45rem] bg-[#0c072c] mt-10 m-auto border-[0.1px] border-[#453995]">
         <div className="mb-14 text-center">
           <h2 className="lg:text-3xl text-2xl font-bold mb-2 text-white ">
-            Create a Mailist
+            Create a Maillist
           </h2>
           <p className="text-sm text-white font-thin ">
             Glad to have you on board! Complete this process by inputting the following <br /> details below
@@ -144,14 +144,14 @@ const CreateMailist = () => {
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm font-medium my-2 text-white">
-              Mailist Name <span className="text-red-500">*</span>
+              Maillist Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               onChange={handleChange}
               value={formData.maillistName}
               name="maillistName"
-              placeholder="Enter mailist name"
+              placeholder="Enter maillist name"
               className="w-full p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134] text-white outline-none"
               required
             />
@@ -244,4 +244,4 @@ const CreateMailist = () => {
   );
 };
 
-export default CreateMailist;
+export default CreateMaillist;

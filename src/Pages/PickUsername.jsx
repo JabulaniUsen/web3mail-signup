@@ -217,29 +217,6 @@ const PickUsername = () => {
                   {/* {usernameAvailability === 'Available' ? 'Available' : 'Not Available'} */}
                 </div>
               )}
-
-              {usernameAvailability === 'Not Available' ?
-
-                <div ref={suggestionsRef} className="mt-2 text-white p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134]">
-                  <ul className='flex flex-col gap-4'>
-                    {suggestions.map((suggestion, index) => (
-                      <li key={index} onClick={() => setUsername(suggestion)} className="cursor-pointer hover:text-gray-400">
-                        {suggestion}
-                      </li>
-                    ))}
-                  </ul>
-                </div> : ''}
-              {suggestions.length > 0 && (
-                <div ref={suggestionsRef} className="mt-2 text-white p-4 transition-all py-3 lg:py-5 rounded-xl bg-[#161134]">
-                  <ul className='flex flex-col gap-4'>
-                    {suggestions.map((suggestion, index) => (
-                      <li key={index} onClick={() => setUsername(suggestion)} className="cursor-pointer hover:text-gray-400">
-                        {suggestion}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
             </div>
           </div>
           <div className="flex gap-10 items-center justify-between">
@@ -252,6 +229,10 @@ const PickUsername = () => {
             </button>
           </div>
         </form>
+
+        <a href='https://box.web3mail.club/mail/' className='text-gray-400 hover:text-white transition-all flex items-center justify-center mt-5'>
+          Already have a web3mail? Login here.
+        </a>
       </div>
       {notification && (
         <Notification

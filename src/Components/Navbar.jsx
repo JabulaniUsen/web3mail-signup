@@ -44,16 +44,16 @@ const Navbar = () => {
       </div>
 
       <div className={`lg:flex items-center gap-5 ${menuOpen ? 'flex' : 'hidden'} flex-col lg:flex-row absolute lg:border-none border lg:relative top-full left-0 lg:top-auto lg:left-auto w-full lg:w-auto bg-[#050122] lg:bg-transparent p-5 lg:p-0 z-20`}>
-        <Link to="/create-mailist" onClick={() => setMenuOpen(false)} className="text-lg text-gray-400 hover:text-white transition-all">
-          Create Mailist
-        </Link>
         <p onClick={viewSubmenu} className="cursor-pointer text-lg text-gray-400 hover:text-white transition-all">
-          Newsletter
+          Maillist
         </p>
         {subMenu && (
-          <div ref={subMenuRef} className="flex flex-col gap-3 items-start mt-2 lg:mt-0 bg-[#161134] p-5 rounded-xl z-20 lg:absolute lg:top-[2rem] lg:right-[25rem]">
+          <div ref={subMenuRef} className="flex flex-col gap-3 items-start mt-2 lg:mt-0 bg-[#161134] p-5 rounded-xl z-20 lg:absolute lg:top-[2rem] lg:right-[21rem] w-[20rem]">
+            <Link to="/create-mailist" onClick={() => setMenuOpen(false)} className="text-[#808080] hover:text-[#3C77FB] transition-all">
+              Create Mailist
+            </Link>
             <Link to="/availiable-newsletters" onClick={() => setMenuOpen(false)} className="text-[#808080] hover:text-[#3C77FB] transition-all">
-              Browse Available Newsletter
+              Browse Available Maillists
             </Link>
             {/* <Link to="/view-subscribed-newsletter" onClick={() => setMenuOpen(false)} className="text-[#808080] hover:text-[#3C77FB] transition-all">
               View Subscribed Newsletter
