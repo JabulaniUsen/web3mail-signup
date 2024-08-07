@@ -75,7 +75,6 @@ const PostPage = () => {
         alt="Background bottom left"
         className="lg:block absolute hidden bottom-0 left-0"
       />
-      <Navbar />
       <div className="lg:p-8 py-8 lg:px-5 rounded-2xl w-full max-w-[58rem] mt-10 m-auto">
         {loading ? (
           <div className="skeleton-wrapper">

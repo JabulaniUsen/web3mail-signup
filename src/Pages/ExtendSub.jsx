@@ -5,10 +5,6 @@ import { faGasPump, faMinus, faPlus, faSignLanguage } from '@fortawesome/free-so
 import { web3mailABI } from '../utils/web3mail/contractABI';
 import bg2 from '../assets/leftdown.svg';
 import bg1 from '../assets/topright.svg';
-import logo from '../assets/logo.svg';
-import grid from '../assets/grid.svg';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import axiosInstance from '../config/axios';
 import { ethers } from 'ethers';
 import { writeContract } from '@wagmi/core';
 import { wagmiConfig } from '../config/wagmi';
@@ -22,7 +18,6 @@ const contractAddress = '0x70DE5b654834f10d06d4442E08f76b6f08974443';
 const baseBuyAmountInWei = 1100000000000000;
 
 const ExtendSub = () => {
-  const { isConnected, address } = useAccount();
   const [years, setYears] = useState(1);
   const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -128,8 +123,6 @@ const ExtendSub = () => {
   return (
     <>
       <div className='lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter'>
-        <Navbar/>
-
         <img src={bg1} alt="" className="absolute top-0 right-0" />
         <img src={bg2} alt="" className="absolute bottom-0 left-0" />
 

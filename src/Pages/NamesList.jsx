@@ -85,7 +85,6 @@ const NamesList = () => {
     <div className="lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter min-h-[100vh]">
       <img src={bg1} alt="" className="lg:block hidden absolute top-0 right-0" />
       <img src={bg2} alt="" className="lg:block absolute hidden bottom-0 left-0" />
-      <Navbar/>
       <div className="lg:w-[35rem] w-[90%] mt-10 m-auto">
         <EmailChecker formData={{}} registerSecret={registerSecret} />
       </div>

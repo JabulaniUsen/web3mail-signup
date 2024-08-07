@@ -107,7 +107,6 @@ const CreateMaillist = () => {
   if (pageLoading) {
     return (
       <div className="lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter">
-        <Navbar />
         <div className="skeleton-wrapper lg:p-8 py-8 px-5 rounded-2xl w-full max-w-[45rem] bg-[#0c072c] mt-10 m-auto">
           <div className="mb-14 text-center">
             <Skeleton height={40} width={300} style={{ marginBottom: '0.5rem' }} />

@@ -4,8 +4,7 @@ import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import bg1 from '../assets/topright.svg';
 import bg2 from '../assets/leftdown.svg';
 import successImg from '../assets/success.svg';
-import { Link, Navigate, useLocation } from 'react-router-dom';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axiosInstance from '../config/axios';
 import { ethers } from 'ethers';
 import { web3mailABI } from '../utils/web3mail/contractABI';
@@ -15,26 +14,24 @@ import { wagmiConfig } from '../config/wagmi';
 import Button from '../Components/Button';
 import { useAccount } from 'wagmi';
 import baseHelper from '../utils/helper';
-import logo from '../assets/logo.svg';
-import grid from '../assets/grid.svg';
 import Notification from '../Components/Notification';
 import Navbar from '../Components/Navbar';
 
 const contractAddress = '0x70DE5b654834f10d06d4442E08f76b6f08974443';
 const baseBuyAmountInWei = 1100000000000000;
 
-const CreateMail = () => {
+const CreateMail = ({ setRegisterComplete }) => {
   const { isConnected, address } = useAccount();
   const [years, setYears] = useState(1);
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { username } = location.state || {};
   const [amountInEth, setAmountInEth] = useState(0.0011);
   const [amountInWei, setAmountInWei] = useState(baseBuyAmountInWei);
   const [notification, setNotification] = useState(null);
-  const [registerComplete, setRegisterComplete] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -92,7 +89,7 @@ const CreateMail = () => {
         setRegisterComplete(true);
         
         setTimeout(() => {
-          Navigate('/');
+          navigate('/');
           baseHelper.deleteFromLocalStorage('formData');
         }, 2000);
         }
@@ -141,11 +138,7 @@ const CreateMail = () => {
                 value: amountInWei
               }
             });
-        
-            // the below hash is for testing
-            // const hash =
-            //   '0xdae91d723c9583abf4f222d410c7800e492fa2fb95791c0974caca13404d6d96';
-        
+
             if (!hash) {
               throw new Error('Error making payment');
             }
@@ -172,7 +165,6 @@ const CreateMail = () => {
             setLoading(false);
             console.log(error.message);
             console.log(error);
-            // console.log('error making payment', error);
             setNotification({
               message: error?.message || 'Error making payment',
               type: 'error'
@@ -222,8 +214,6 @@ const CreateMail = () => {
         
         return (
           <div className='bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter '>
-            <Navbar/>
-        
             <img src={bg1} alt='' className='absolute top-0 right-0' />
             <img src={bg2} alt='' className='absolute bottom-0 left-0' />
         

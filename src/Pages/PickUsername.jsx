@@ -176,7 +176,6 @@ const PickUsername = () => {
         alt=""
         className="lg:block absolute hidden bottom-0 left-0"
       />
-      <Navbar/>
       <div className="lg:p-8 py-8 px-5 rounded-2xl w-full max-w-[35rem] mt-10 m-auto">
         <div className="mb-14">
           <h2 className="lg:text-3xl text-2xl font-bold mb-2 text-white text-center">

@@ -85,7 +85,6 @@ const SignUp = () => {
         alt=""
         className="lg:block absolute hidden bottom-0 left-0"
       />
-      <Navbar/>
       <div className="lg:p-8 py-8 px-5 rounded-2xl w-full max-w-[35rem] bg-[#0c072c] mt-10 m-auto border-[0.1px] border-[#453995]">
         <div className="mb-14">
           <h2 className="lg:text-3xl text-2xl font-bold mb-2 text-white ">

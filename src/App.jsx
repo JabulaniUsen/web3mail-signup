@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { useState } from 'react';
+import Navbar from './Components/Navbar';
 import CreateMail from './Pages/CreateMail';
 import SignUp from './Pages/SignUp';
 import ExtendSub from './Pages/ExtendSub';
@@ -9,12 +11,15 @@ import AvailiableNewsletters from './Pages/AvailiableNewsletters';
 import PostPage from './Pages/PostPage';
 
 function App() {
+  const [registerComplete, setRegisterComplete] = useState(false);
+
   return (
     <Router>
+      <Navbar registerComplete={registerComplete} />
       <Routes>
         <Route path="/" element={<PickUsername />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/create-mail" element={<CreateMail />} />
+        <Route path="/create-mail" element={<CreateMail setRegisterComplete={setRegisterComplete} />} />
         <Route path="/extend-subscription" element={<ExtendSub />} />
         <Route path='/registered-names' element={<NamesList/>} />
         <Route path='/create-mailist' element={<CreateMailist/>} />
