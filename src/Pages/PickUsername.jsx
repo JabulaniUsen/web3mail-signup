@@ -3,13 +3,9 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 import axiosInstance from '../config/axios';
 import Notification from '../Components/Notification';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import baseHelper from '../utils/helper';
-import logo from '../assets/logo.svg';
 import bg1 from '../assets/topright.svg';
 import bg2 from '../assets/leftdown.svg';
-import grid from '../assets/grid.svg';
-import Navbar from '../Components/Navbar';
 
 const PickUsername = () => {
   const { isConnected } = useAccount();
@@ -59,10 +55,15 @@ const PickUsername = () => {
       if (!username) {
         return;
       }
-      // Check for special characters or spaces
+      // Check for special characters, spaces, or uppercase letters
       const specialCharPattern = /[^a-zA-Z0-9]/;
+      const uppercasePattern = /[A-Z]/;
       if (specialCharPattern.test(username)) {
         setUsernameAvailability('Invalid Username');
+        return;
+      }
+      if (uppercasePattern.test(username)) {
+        setUsernameAvailability('Username should not contain uppercase letters');
         return;
       }
       if (username.length < 3) {
@@ -74,13 +75,8 @@ const PickUsername = () => {
       if (!success) {
         throw new Error("Failed to check email availability");
       }
-      setUsernameAvailability(available ? 'Available' : 'Not Avalable');
-      if (!available) {
-        // setSuggestions(generateSuggestions(username));
-        setSuggestions([]);
-      } else {
-        setSuggestions([]);
-      }
+      setUsernameAvailability(available ? 'Available' : 'Not Available');
+      setSuggestions([]);
     } catch (error) {
       console.error('Username check error:', error);
       setUsernameAvailability(null);
@@ -88,19 +84,12 @@ const PickUsername = () => {
     }
   };
 
-  // const generateSuggestions = (base) => {
-  //   const suggestions = [];
-  //   for (let i = 1; i <= 4; i++) {
-  //     suggestions.push(`${base}${i}`);
-  //   }
-  //   return suggestions;
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check for special characters or spaces
+    // Check for special characters, spaces, or uppercase letters
     const specialCharPattern = /[^a-zA-Z0-9]/;
+    const uppercasePattern = /[A-Z]/;
     if (specialCharPattern.test(username)) {
       setNotification({
         message: 'Username should not contain special characters or spaces!',
@@ -108,14 +97,17 @@ const PickUsername = () => {
       });
       return;
     }
-
+    if (uppercasePattern.test(username)) {
+      setNotification({
+        message: 'Username should not contain uppercase letters!',
+        type: 'error'
+      });
+      return;
+    }
     if (usernameAvailability !== 'Available') {
       setNotification({ message: 'Username is already taken!', type: 'error' });
       return;
     }
-    
-    
-    // Check if username field is empty
     if (username === '') {
       setNotification({
         message: 'Please enter a Username',
@@ -140,7 +132,7 @@ const PickUsername = () => {
         setNotification({
           message: 'Please connect wallet first',
           type: 'error'
-        })
+        });
       } else {
         setLoading(true);
         setTimeout(() => {
@@ -148,7 +140,6 @@ const PickUsername = () => {
           navigate('/signup', { state: { formData: dataToSend } });
         }, 1000);
       }
-      
       
     } catch (error) {
       setLoading(false);
@@ -213,7 +204,6 @@ const PickUsername = () => {
               {usernameAvailability && (
                 <div className={`text-end ${usernameAvailability === 'Available' ? 'text-green-500' : 'text-red-500'}`}>
                   {usernameAvailability}
-                  {/* {usernameAvailability === 'Available' ? 'Available' : 'Not Available'} */}
                 </div>
               )}
             </div>
@@ -229,7 +219,7 @@ const PickUsername = () => {
           </div>
         </form>
 
-        <a href='https://box.web3mail.club/mail/' className='text-gray-400 hover:text-white transition-all flex items-center justify-center mt-5'>
+        <a href='https://box.web3mail.club/mail/' target='_blank' className='text-gray-400 hover:text-white transition-all flex items-center justify-center mt-5'>
           Already have a web3mail? Login here.
         </a>
       </div>

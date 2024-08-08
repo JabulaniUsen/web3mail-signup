@@ -20,7 +20,7 @@ import Navbar from '../Components/Navbar';
 const contractAddress = '0x70DE5b654834f10d06d4442E08f76b6f08974443';
 const baseBuyAmountInWei = 1100000000000000;
 
-const CreateMail = ({ setRegisterComplete }) => {
+const CreateMail = ({ setRegisterComplete, registerComplete }) => {
   const { isConnected, address } = useAccount();
   const [years, setYears] = useState(1);
   const [email, setEmail] = useState('');
