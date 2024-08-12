@@ -1,21 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGasPump, faMinus, faPlus, faSignLanguage } from '@fortawesome/free-solid-svg-icons';
-import { web3mailABI } from '../utils/web3mail/contractABI';
+import { faGasPump, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import bg2 from '../assets/leftdown.svg';
 import bg1 from '../assets/topright.svg';
-import { ethers } from 'ethers';
-import { writeContract } from '@wagmi/core';
-import { wagmiConfig } from '../config/wagmi';
 import ConfirmExtend from './ConfirmExtend';
 import Notification from '../Components/Notification';
-import { waitForTransactionReceipt } from 'viem/actions';
-import { useAccount } from 'wagmi';
 import Navbar from '../Components/Navbar';
-
-const contractAddress = '0x70DE5b654834f10d06d4442E08f76b6f08974443';
-const baseBuyAmountInWei = 1100000000000000;
 
 const ExtendSub = () => {
   const [years, setYears] = useState(1);
@@ -25,14 +16,13 @@ const ExtendSub = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { username, name, id, years: initialYears } = location.state || {};
-  const [year, setYear] = useState(initialYears || 1);
-  const [amountInEth, setAmountInEth] = useState(0.0011);
-  const [amountInWei, setAmountInWei] = useState(baseBuyAmountInWei);
+  const [amountInEth, setAmountInEth] = useState(0.0011); // Hardcoded ETH value
   const [notification, setNotification] = useState(null);
   const [extSubs, setExtSubs] = useState(true);
-  
+
   useEffect(() => {
-    getAmountByEmailAndYear();
+    // Example: Adjust the amount based on the number of years
+    setAmountInEth((prevAmount) => (0.0011 * years).toFixed(4));
   }, [years]);
 
   const handleIncrement = () => {
@@ -45,71 +35,20 @@ const ExtendSub = () => {
     }
   };
 
-  const getAmountByEmailAndYear = async () => {
-    try {
-      const res = await axiosInstance.get(
-        `/extendSubscriptionAmount/${username}/${years}`
-      );
-      console.log(username, years);
-      console.log(res);
-      const amountInWeiFromRes = res?.data?.amount;
-      const ethValue = ethers.formatEther(amountInWeiFromRes);
-      setAmountInEth(parseFloat(ethValue));
-      setAmountInWei(amountInWeiFromRes);
-    } catch (error) {
-      console.log('error', error);
-    }
-  };
-
-  const handleExtend = async () => {
+  const handleExtend = () => {
     setLoading(true);
-    try {
-      const hash = await writeContract(wagmiConfig, {
-        address: contractAddress,
-        abi: web3mailABI,
-        functionName: 'extendSubscription',
-        args: [username, years],
-        value: amountInWei,
-        overrides: {
-          value: amountInWei
-        }
+    setTimeout(() => {
+      setLoading(false);
+      setShowSuccessModal(true);
+      setNotification({
+        message: 'Subscription extended successfully',
+        type: 'success'
       });
-      console.log('Transaction hash:', hash);
-  
-      if (!hash) {
-        throw new Error('Error making payment');
-      }
-  
-      const confirmationRes = await waitForTransactionReceipt(wagmiConfig, {
-        hash
-      });
-  
-      console.log('Confirmation response:', confirmationRes);
-  
-      if (confirmationRes?.status !== 'success') {
-        throw new Error('Error confirming payment');
-      } else {
-        setShowSuccessModal(true);
-        setNotification({
-          message: 'Subscription extended successfully',
-          type: 'success'
-        });
-      }
-  
       setTimeout(() => {
         navigate('/registered-names');
       }, 2000);
-  
-    } catch (error) {
-      setLoading(false);
-      console.error('Error during transaction:', error.message);
-      setNotification({
-        message: error?.message || 'Error making payment',
-        type: 'error'
-      });
-    }
+    }, 1500); // Simulate processing time
   };
-  
 
   const handleCloseNotification = () => {
     setNotification(null);
@@ -161,15 +100,10 @@ const ExtendSub = () => {
           <div className="px-5">
             <div className="px-1">
               <div className="flex items-center justify-between relative">
-                <p className='text-white flex items-center gap-2'>
+                <p className='text-white flex items-center my-3 gap-2'>
                   <FontAwesomeIcon icon={faGasPump} />
                   9.96 Gwei
                 </p>
-                <div className="amount flex items-center justify-center mt-5">
-                  <div className="amount flex items-center justify-center my-5 p-2 bg-[#161134]">
-                    <p className='text-white p-1 px-2 rounded font-semibold bg-[#3C77FB] text-xs'>ETH</p>
-                  </div>
-                </div>
               </div>
             </div>
             <div className="bg-[#161134] rounded-lg flex items-center justify-between px-7 relative py-2">
@@ -178,7 +112,7 @@ const ExtendSub = () => {
               </p>
               <div className="amount flex items-center justify-center my-2">
                 <p className="text-white ">
-                  {amountInEth.toFixed(4)} ETH
+                  {amountInEth} ETH
                 </p>
               </div>
             </div>

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axiosInstance from '../config/axios';
 import Notification from '../Components/Notification';
 import bg1 from '../assets/topright.svg';
 import bg2 from '../assets/leftdown.svg';
@@ -14,6 +13,26 @@ import EmailChecker from '../Components/EmailChecker';
 import ethLogo from '../assets/logos_ethereum.svg';
 import avatar from '../assets/ava.png';
 import Navbar from '../Components/Navbar';
+
+// Mock data to replace the API response
+const mockData = [
+  {
+    _id: '1',
+    firstName: 'John Doe',
+    email: 'john.doe@example.com',
+    createdAt: new Date().toISOString(),
+    expiryDate: new Date().getTime() / 1000 + 365 * 24 * 60 * 60, // 1 year from now
+    walletAddress: '0x123456789abcdef123456789abcdef123456789a',
+  },
+  {
+    _id: '2',
+    firstName: 'Jane Smith',
+    email: 'jane.smith@example.com',
+    createdAt: new Date().toISOString(),
+    expiryDate: new Date().getTime() / 1000 + 2 * 365 * 24 * 60 * 60, // 2 years from now
+    walletAddress: '0xabcdefabcdefabcdefabcdefabcdefabcdef',
+  },
+];
 
 const NamesList = () => {
   const { address } = useAccount();
@@ -30,30 +49,29 @@ const NamesList = () => {
   };
 
   useEffect(() => {
-  const fetchNames = async () => {
-    try {
-      const response = await axiosInstance.get(`/getUsersByExpiry/${expiryFilter || 1}`);
-      console.log(response);
-      const processedNames = Array.isArray(response.data.data)
-        ? response.data.data.map(item => {
-            const yearsBetween = calculateYearsBetweenDates(item.createdAt, item.expiryDate);
-            localStorage.setItem(item._id, yearsBetween); // Store the years in local storage
-            return {
-              ...item,
-              email: stripEmailDomain(item.email)
-            };
-          })
-        : [];
-      setNameList(processedNames);
-    } catch (error) {
-      console.error('Error fetching names:', error);
-      setNotification({ type: 'error', message: error.response.data.message });
-    }
-  };
+    // Mocked fetch function to replace API call
+    const fetchNames = () => {
+      try {
+        const filteredData = mockData.filter(item => {
+          const yearsBetween = calculateYearsBetweenDates(item.createdAt, item.expiryDate);
+          localStorage.setItem(item._id, yearsBetween); // Store the years in local storage
+          return expiryFilter ? yearsBetween === parseInt(expiryFilter) : true;
+        });
 
-  fetchNames();
-}, [expiryFilter]);
+        const processedNames = filteredData.map(item => ({
+          ...item,
+          email: stripEmailDomain(item.email),
+        }));
 
+        setNameList(processedNames);
+      } catch (error) {
+        console.error('Error fetching names:', error);
+        setNotification({ type: 'error', message: 'Failed to fetch names' });
+      }
+    };
+
+    fetchNames();
+  }, [expiryFilter]);
 
   const calculateYearsBetweenDates = (startDate, endDate) => {
     const start = new Date(startDate);
@@ -61,7 +79,6 @@ const NamesList = () => {
     const years = end.getFullYear() - start.getFullYear();
     return years;
   };
-  
 
   const handleClickName = (name) => {
     setSelectedName(name);

@@ -15,7 +15,7 @@ function App() {
 
   return (
     <Router>
-      <Navbar registerComplete={registerComplete} />
+      <Navbar />
       <Routes>
         <Route path="/" element={<PickUsername />} />
         <Route path="/signup" element={<SignUp />} />

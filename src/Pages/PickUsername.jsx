@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAccount } from 'wagmi';
-import axiosInstance from '../config/axios';
 import Notification from '../Components/Notification';
 import baseHelper from '../utils/helper';
 import bg1 from '../assets/topright.svg';
@@ -11,7 +10,6 @@ const PickUsername = () => {
   const { isConnected } = useAccount();
   const [username, setUsername] = useState('');
   const [usernameAvailability, setUsernameAvailability] = useState(null);
-  const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
   const suggestionsRef = useRef(null);
@@ -26,7 +24,6 @@ const PickUsername = () => {
         !suggestionsRef.current.contains(event.target)
       ) {
         setUsernameAvailability(null);
-        setSuggestions([]);
       }
     };
 
@@ -41,7 +38,6 @@ const PickUsername = () => {
       checkUsernameAvailability(username);
     } else {
       setUsernameAvailability(null);
-      setSuggestions([]);
     }
   }, [username]);
 
@@ -50,46 +46,37 @@ const PickUsername = () => {
     setUsername(value);
   };
 
-  const checkUsernameAvailability = async (username) => {
-    try {
-      if (!username) {
-        return;
-      }
-      // Check for special characters, spaces, or uppercase letters
-      const specialCharPattern = /[^a-zA-Z0-9]/;
-      const uppercasePattern = /[A-Z]/;
-      if (specialCharPattern.test(username)) {
-        setUsernameAvailability('Invalid Username');
-        return;
-      }
-      if (uppercasePattern.test(username)) {
-        setUsernameAvailability('Username should not contain uppercase letters');
-        return;
-      }
-      if (username.length < 3) {
-        setUsernameAvailability('Username must be greater than 3 characters');
-        return;
-      }
-      const response = await axiosInstance.get(`/emailAvailability/${username}`);
-      const { success, available } = response.data;
-      if (!success) {
-        throw new Error("Failed to check email availability");
-      }
-      setUsernameAvailability(available ? 'Available' : 'Not Available');
-      setSuggestions([]);
-    } catch (error) {
-      console.error('Username check error:', error);
-      setUsernameAvailability(null);
-      setSuggestions([]);
+  const checkUsernameAvailability = (username) => {
+    // Local validation
+    const specialCharPattern = /[^a-zA-Z0-9]/;
+    const uppercasePattern = /[A-Z]/;
+    
+    if (specialCharPattern.test(username)) {
+      setUsernameAvailability('Invalid Username');
+      return;
     }
+    if (uppercasePattern.test(username)) {
+      setUsernameAvailability('Username should not contain uppercase letters');
+      return;
+    }
+    if (username.length < 3) {
+      setUsernameAvailability('Username must be greater than 3 characters');
+      return;
+    }
+    
+    // Simulate username availability check
+    const mockTakenUsernames = ['takenuser', 'existingname', 'admin'];
+    setUsernameAvailability(
+      mockTakenUsernames.includes(username.toLowerCase()) ? 'Not Available' : 'Available'
+    );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check for special characters, spaces, or uppercase letters
     const specialCharPattern = /[^a-zA-Z0-9]/;
     const uppercasePattern = /[A-Z]/;
+
     if (specialCharPattern.test(username)) {
       setNotification({
         message: 'Username should not contain special characters or spaces!',
@@ -115,7 +102,7 @@ const PickUsername = () => {
       });
       return;
     }
-    
+
     const email = username;
 
     try {
@@ -127,7 +114,6 @@ const PickUsername = () => {
       
       baseHelper.addToLocalStorage('formData', dataToSend);
       
-      // Navigate after a delay
       if (!isConnected) {
         setNotification({
           message: 'Please connect wallet first',
@@ -145,7 +131,7 @@ const PickUsername = () => {
       setLoading(false);
       console.error('Sign up error:', error);
       setNotification({
-        message: error.response?.data?.message || 'Sign up failed!',
+        message: 'Sign up failed!',
         type: 'error'
       });
     }

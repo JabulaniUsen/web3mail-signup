@@ -1,17 +1,12 @@
 import { useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Notification from '../Components/Notification';
 import bg1 from '../assets/topright.svg';
 import bg2 from '../assets/leftdown.svg';
-import logo from '../assets/logo.svg';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import Button from '../Components/Button';
-import grid from '../assets/grid.svg';
-import baseHelper from '../utils/helper';
-import Navbar from '../Components/Navbar';
 
 const SignUp = () => {
   const { isConnected } = useAccount();
@@ -29,17 +24,21 @@ const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
   const [pwError, setPwError] = useState(false);
-  const [pwLength, setPwLength] = useState(false)
+  const [pwLength, setPwLength] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
-    formData.password < 8 ? setPwLength(true) : setPwLength(false)
+    if (name === 'password' && value.length < 8) {
+      setPwLength(true);
+    } else if (name === 'password' && value.length >= 8) {
+      setPwLength(false);
+    }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.firstName || !formData.lastName || !formData.gender || !formData.password || !formData.confirmPassword) {
       setNotification({ message: 'All fields are required!', type: 'error' });
@@ -48,10 +47,11 @@ const SignUp = () => {
 
     if (formData.password !== formData.confirmPassword) {
       setNotification({ message: 'Passwords do not match!', type: 'error' });
+      setPwError(true);
       return;
     }
 
-    if (pwError) {
+    if (pwLength) {
       setNotification({ message: 'Password must be at least 8 characters', type: 'error' });
       return;
     }
@@ -59,39 +59,29 @@ const SignUp = () => {
     // Exclude confirmPassword before navigating
     const { confirmPassword, ...dataToSend } = formData;
 
-    console.log("sign up form data", formData);
-    baseHelper.addToLocalStorage('formData', formData);
-
     console.log('Navigating to /create-mail with formData:', dataToSend);
     navigate('/create-mail', { state: { formData: dataToSend } });
   };
-
 
   const handlePasswordToggle = () => {
     setShowPassword(!showPassword);
   };
 
-
+  const handleCloseNotification = () => {
+    setNotification(null);
+  };
 
   return (
     <div className="lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter">
-      <img
-        src={bg1}
-        alt=""
-        className="lg:block hidden absolute top-0 right-0"
-      />
-      <img
-        src={bg2}
-        alt=""
-        className="lg:block absolute hidden bottom-0 left-0"
-      />
+      <img src={bg1} alt="" className="lg:block hidden absolute top-0 right-0" />
+      <img src={bg2} alt="" className="lg:block absolute hidden bottom-0 left-0" />
       <div className="lg:p-8 py-8 px-5 rounded-2xl w-full max-w-[35rem] bg-[#0c072c] mt-10 m-auto border-[0.1px] border-[#453995]">
         <div className="mb-14">
           <h2 className="lg:text-3xl text-2xl font-bold mb-2 text-white ">
             {formData.email}@web3mail.club
           </h2>
           <p className="text-sm text-white font-thin ">
-            Glad to have you on board! Complete this process by inputing  the following details below
+            Glad to have you on board! Complete this process by inputting the following details below.
           </p>
         </div>
         <form className="space-y-4" onSubmit={handleSubmit}>
@@ -140,7 +130,6 @@ const SignUp = () => {
                 <option className='bg-black' value="Female">Female</option>
                 <option className='bg-black' value="Other">Other</option>
               </select>
-
             </div>
           </div>
           <div>

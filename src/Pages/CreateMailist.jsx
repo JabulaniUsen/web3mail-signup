@@ -5,8 +5,6 @@ import bg2 from '../assets/leftdown.svg';
 import { useAccount } from 'wagmi';
 import Button from '../Components/Button';
 import Navbar from '../Components/Navbar';
-import axiosInstance from '../config/axios';
-import { useNavigate } from 'react-router-dom';
 import Resizer from 'react-image-file-resizer';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -18,7 +16,6 @@ const CreateMaillist = () => {
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [notification, setNotification] = useState(null);
-  const registerSecret = "thisisgonnabetheextralayerofsecurity";
   const [formData, setFormData] = useState({
     maillistName: '',
     subtitle: '',
@@ -28,8 +25,6 @@ const CreateMaillist = () => {
     groupId: ''
   });
   const [previewImage, setPreviewImage] = useState(null);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => setPageLoading(false), 1000);
@@ -80,24 +75,15 @@ const CreateMaillist = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
-    const dataToSend = {
-      ...formData,
-      registerSecret
-    };
-    try {
-      const response = await axiosInstance.post('/createNewsletter', dataToSend);
-      console.log('Response:', response.data);
+
+    // Simulate a successful form submission
+    setTimeout(() => {
       setLoading(false);
-      setNotification({ message: 'Newsletter created successfully', type: 'success' });
-      navigate('/');
-    } catch (error) {
-      console.error('Something went wrong, try again', error);
-      setNotification({ message: 'Something went wrong, try again', type: 'error' });
-      setLoading(false);
-    }
+      setNotification({ message: 'Newsletter created successfully (simulated)', type: 'success' });
+    }, 1000);
   };
 
   const handleCloseNotification = () => {
@@ -130,7 +116,7 @@ const CreateMaillist = () => {
     <div className="lg:px-20 px-5 bg-[#050122] lg:pb-40 pb-20 py-10 px-2 relative inter">
       <img src={bg1} alt="" className="lg:block hidden absolute top-0 right-0" />
       <img src={bg2} alt="" className="lg:block absolute hidden bottom-0 left-0" />
-      <Navbar />
+
       <div className="lg:p-8 py-8 px-5 rounded-2xl w-full max-w-[45rem] bg-[#0c072c] mt-10 m-auto border-[0.1px] border-[#453995]">
         <div className="mb-14 text-center">
           <h2 className="lg:text-3xl text-2xl font-bold mb-2 text-white ">
